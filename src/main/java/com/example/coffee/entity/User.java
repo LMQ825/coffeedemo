@@ -8,6 +8,7 @@ public class User {
     private String phone;
     private String address;
 
+    private Integer status;
     // 无参构造
     public User() {}
     // 全参构造
@@ -51,6 +52,8 @@ public class User {
         this.address = address;
     }
 
+    public Integer getStatus() { return status; }
+    public void setStatus(Integer status) { this.status = status; }
     @Override
     public String toString() {
         return "User{" +
