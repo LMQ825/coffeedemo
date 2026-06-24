@@ -9,6 +9,14 @@ import java.io.IOException;
 
 @WebFilter("/*")
 public class LoginFilter implements Filter {
+
+    // 必须重写初始化方法
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // 无业务需求留空即可
+    }
+
+    // 核心过滤逻辑
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
@@ -16,34 +24,48 @@ public class LoginFilter implements Filter {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=utf-8");
 
-        String url = request.getRequestURI();
-        // 放行无需登录的页面、静态资源、登录注册servlet
-        String[] freePages = {
-                "splash.jsp", "index.jsp", "coffeeList.jsp", "login.jsp", "register.jsp",
-                "LoginServlet", "RegisterServlet", "css/", "js/", "images/"
+        String uri = request.getRequestURI();
+        // 无需登录放行页面
+        String[] freeResource = {
+                "splash.jsp",
+                "index.jsp",
+                "coffeeList.jsp",
+                "login.jsp",
+                "register.jsp",
+                "LoginServlet",
+                "RegisterServlet",
+                "css/",
+                "js/",
+                "images/"
         };
+
         boolean isFree = false;
-        for(String path : freePages){
-            if(url.contains(path)){
+        for (String path : freeResource) {
+            if (uri.contains(path)) {
                 isFree = true;
                 break;
             }
         }
-        // 不需要登录，直接放行
-        if(isFree){
+
+        if (isFree) {
             chain.doFilter(req, resp);
             return;
         }
-        // 需要登录：判断session是否存在用户
+
+        // 需要登录校验
         HttpSession session = request.getSession();
-        Object user = session.getAttribute("loginUser");
-        if(user == null){
-            // 保存当前跳转前页面，登录成功后返回原页面
-            session.setAttribute("preUrl", url);
+        Object loginUser = session.getAttribute("loginUser");
+        if (loginUser == null) {
+            session.setAttribute("preUrl", uri);
             response.sendRedirect("login.jsp");
             return;
         }
-        // 已登录，放行
         chain.doFilter(req, resp);
+    }
+
+    // 必须重写销毁方法
+    @Override
+    public void destroy() {
+        // 无资源释放需求留空即可
     }
 }

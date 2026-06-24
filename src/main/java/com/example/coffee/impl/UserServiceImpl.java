@@ -8,7 +8,7 @@ import com.example.coffee.service.UserService;
 
 public class UserServiceImpl implements UserService {
     // 注入DAO
-    private UserDao userDao = new UserDao();
+    private UserDao userDao = new UserDaoImpl();
 
     @Override
     public User login(String username, String password) {
