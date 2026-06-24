@@ -24,7 +24,7 @@
         .submit-btn {padding:10px 24px;background:#C9B48E;color:#fff;border:none;border-radius:20px;cursor:pointer;}
         /* 底部导航 */
         .footer-nav {position:fixed;bottom:0;left:0;width:100%;background:#fff;display:flex;padding:8px 0;border-top:1px solid #E9D9C2;}
-        .nav-item {flex:1;text-align:center;font-size:12px;}
+        .nav-item {flex:1;text-align:center;font-size:12px;cursor:pointer;}
         .nav-icon {font-size:22px;margin-bottom:4px;display:block;}
         .nav-item.active {color:#C9B48E;}
     </style>
@@ -58,10 +58,10 @@
     </div>
 </div>
 
-<!-- 结算底部栏 -->
+<!-- 底部结算栏 -->
 <div class="settle-bar">
     <div class="total-text">合计：<span class="total-price">¥58</span></div>
-    <button class="submit-btn" onclick="location.href='orderSubmit.jsp'">去结算</button>
+    <button class="submit-btn" onclick="goPay()">去结算</button>
 </div>
 
 <!-- 底部导航 -->
@@ -72,12 +72,42 @@
     <div class="nav-item" onclick="location.href='coffeeList.jsp'">
         <span class="nav-icon">🍹</span>点单
     </div>
-    <div class="nav-item" onclick="location.href='myOrder.jsp'">
+    <div class="nav-item" onclick="goOrder()">
         <span class="nav-icon">📋</span>订单
     </div>
-    <div class="nav-item active" onclick="location.href='cart.jsp'">
+    <div class="nav-item active" onclick="goPersonal()">
         <span class="nav-icon">🛒</span>购物车
     </div>
 </div>
+
+<script>
+    let loginUser = ${sessionScope.loginUser != null ? 1 : 0};
+    // 结算下单
+    function goPay(){
+        if(loginUser === 1){
+            location.href = "orderSubmit.jsp";
+        }else{
+            alert("下单前需要登录账号！");
+            location.href = "login.jsp";
+        }
+    }
+    // 我的订单
+    function goOrder(){
+        if(loginUser === 1){
+            location.href = "myOrder.jsp";
+        }else{
+            alert("请先登录！");
+            location.href = "login.jsp";
+        }
+    }
+    // 个人中心
+    function goPersonal(){
+        if(loginUser === 1){
+            location.href = "personal.jsp";
+        }else{
+            location.href = "login.jsp";
+        }
+    }
+</script>
 </body>
 </html>
