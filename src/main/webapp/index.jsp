@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>咩嘢熊仔咖啡-管理后台</title>
+    <title>咩嘢熊仔咖啡</title>
     <style>
         * {
             margin: 0;
