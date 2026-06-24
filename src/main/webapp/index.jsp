@@ -1,217 +1,113 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>咩嘢熊仔咖啡</title>
+    <title>咩嘢熊仔 - 首页</title>
+    <!-- 引入 Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入图标库 (可选) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "微软雅黑", sans-serif;
-        }
-        body {
-            background-color: #FFF6E4;
-            color: #6D5A47;
-            padding: 20px 15px;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-        /* 顶部logo区域 */
-        .header-logo {
-            text-align: center;
-            margin: 30px 0 40px;
-        }
-        .bear-icon {
-            font-size: 80px;
-            line-height: 1;
-        }
-        .shop-name {
-            font-size: 28px;
-            font-weight: bold;
-            margin: 10px 0 5px;
-            letter-spacing: 3px;
-        }
-        .shop-slogan {
-            font-size: 14px;
-            color: #947c64;
-            border: 1px solid #C9B48E;
-            display: inline-block;
-            padding: 4px 16px;
-            border-radius: 20px;
-            margin-top: 8px;
-        }
-        /* 四大功能模块卡片 */
-        .func-wrap {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .func-card {
-            background: #fff;
-            border-radius: 14px;
-            padding: 20px 10px;
-            text-align: center;
-            border: 1px solid #E9D9C2;
-        }
-        .func-icon {
-            font-size: 42px;
-            margin-bottom: 8px;
-        }
-        .func-title {
-            font-size: 16px;
-            font-weight: 500;
-        }
-        .func-en {
-            font-size: 12px;
-            color: #a8937b;
-            margin-top: 3px;
-        }
-        /* 礼品卡栏 */
-        .gift-card-bar {
-            background: #C9B48E;
-            border-radius: 10px;
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fff;
-            margin-bottom: 20px;
-        }
-        .gift-btn {
-            background: #fff;
-            color: #6D5A47;
-            border: none;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        /* 门店模块 */
-        .store-box {
-            background: #fff;
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 80px;
-        }
-        .store-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .store-name {
-            font-size: 15px;
-            font-weight: bold;
-        }
-        .store-address {
-            font-size: 12px;
-            color: #947c64;
-            line-height: 1.5;
-        }
-        .go-order-btn {
-            font-size: 12px;
-            color: #C9B48E;
-        }
-        /* 底部导航栏 */
-        .footer-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            max-width: 480px;
-            background: #fff;
-            display: flex;
-            padding: 10px 0;
-            border-top: 1px solid #E9D9C2;
-        }
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            font-size: 12px;
-        }
-        .nav-icon {
-            font-size: 22px;
-            margin-bottom: 4px;
-            display: block;
-        }
-        .nav-item.active {
-            color: #C9B48E;
-        }
+        body { background-color: #FFF8E7; padding-bottom: 70px; font-family: sans-serif; }
+        /* 顶部导航 */
+        .app-header { background: #D8C3A5; padding: 15px; color: #5D4037; border-radius: 0 0 20px 20px; }
+        /* 快捷入口卡片 */
+        .quick-card { background: white; border-radius: 15px; padding: 15px 5px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); height: 100%; }
+        .quick-card i { font-size: 24px; color: #8E6E53; }
+        /* 商品列表卡片 */
+        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin-bottom: 15px; transition: transform 0.2s; }
+        .product-card:hover { transform: translateY(-3px); }
+        .product-img { width: 100%; height: 120px; object-fit: cover; background: #eee; }
+        .product-info { padding: 10px; }
+        .product-title { font-size: 14px; font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-price { color: #D32F2F; font-weight: bold; margin-top: 5px; }
+        /* 底部导航 */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid #ddd; padding: 8px 0; display: flex; justify-content: space-around; z-index: 999; }
+        .nav-item { text-align: center; color: #888; text-decoration: none; font-size: 12px; }
+        .nav-item.active { color: #8E6E53; font-weight: bold; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 2px; }
     </style>
 </head>
 <body>
-<!-- 顶部店铺logo -->
-<div class="header-logo">
-    <div class="bear-icon">🐻</div>
-    <div class="shop-name">咩嘢熊仔</div>
-    <div class="shop-slogan">早咖晚酒</div>
-</div>
 
-<!-- 四大功能入口 -->
-<div class="func-wrap">
-    <div class="func-card" onclick="location.href='coffeeList.jsp'">
-        <div class="func-icon">🍸</div>
-        <div class="func-title">点单</div>
-        <div class="func-en">ORDER</div>
+<!-- 1. 顶部 Header -->
+<div class="app-header d-flex justify-content-between align-items-center">
+    <div>
+        <h4 class="m-0">咩嘢熊仔</h4>
+        <small>早咖晚酒 · 门店</small>
     </div>
-    <div class="func-card" onclick="location.href='coffeeList.jsp?type=take'">
-        <div class="func-icon">☕</div>
-        <div class="func-title">自提</div>
-        <div class="func-en">TAKEOUT</div>
-    </div>
-    <div class="func-card" onclick="location.href='myCoupon.jsp'">
-        <div class="func-icon">🎫</div>
-        <div class="func-title">优惠券</div>
-        <div class="func-en">COUPON</div>
-        <div style="font-size:12px;margin-top:4px;color:#a8937b;">0张</div>
-    </div>
-    <div class="func-card" onclick="location.href='personal.jsp'">
-        <div class="func-icon">💰</div>
-        <div class="func-title">储值中心</div>
-        <div class="func-en">STORED VALUE</div>
-        <div style="font-size:12px;margin-top:4px;color:#a8937b;">0.00元</div>
+    <div>
+        <i class="bi bi-cart fs-4 me-3"></i>
+        <i class="bi bi-person-circle fs-4"></i>
     </div>
 </div>
 
-<!-- 礼品卡横幅 -->
-<div class="gift-card-bar">
-    <span>🎁 礼品卡</span>
-    <button class="gift-btn" onclick="alert('礼品卡功能开发中')">立即购买 ></button>
+<!-- 2. 快捷功能入口 (核心菜单) -->
+<div class="container mt-4">
+    <div class="row g-2">
+        <div class="col-3">
+            <div class="quick-card"><i class="bi bi-cup-hot-fill"></i><div class="mt-1 fw-bold">点单</div></div>
+        </div>
+        <div class="col-3">
+            <div class="quick-card"><i class="bi bi-box-seam"></i><div class="mt-1 fw-bold">自提</div></div>
+        </div>
+        <div class="col-3">
+            <div class="quick-card"><i class="bi bi-ticket-perforated-fill"></i><div class="mt-1 fw-bold">优惠券</div></div>
+        </div>
+        <div class="col-3">
+            <div class="quick-card"><i class="bi bi-wallet2"></i><div class="mt-1 fw-bold">储值</div></div>
+        </div>
+    </div>
 </div>
 
-<!-- 门店信息 -->
-<div class="store-box">
-    <div class="store-top">
-        <span class="store-name">门店 (1)</span>
-        <span class="go-order-btn" onclick="location.href='coffeeList.jsp'">去下单 ></span>
+<!-- 3. 首页中间商品信息展示区 -->
+<div class="container mt-4">
+    <!-- 模块标题 -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="fw-bold m-0">🔥 今日推荐</h5>
+        <a href="#" class="text-muted text-decoration-none small">查看全部 ></a>
     </div>
-    <div class="store-name">咩嘢熊仔</div>
-    <div class="store-address">四会市东城街道江丽路1座商铺1号（首层）</div>
+
+    <div class="row">
+        <!-- 这里是 JSTL 循环展示后端传来的商品列表 -->
+        <c:forEach items="${productList}" var="product">
+            <div class="col-6">
+                <div class="product-card">
+                    <!-- 如果库里有图片路径，用 ${product.imgUrl} -->
+                    <img src="${product.imageUrl != null ? product.imageUrl : 'https://via.placeholder.com/200x150?text=Coffee'}" class="product-img" alt="商品图片">
+                    <div class="product-info">
+                        <div class="product-title">${product.name}</div>
+                        <div class="text-muted small" style="font-size: 12px;">${product.description}</div>
+                        <div class="product-price">¥ ${product.price}</div>
+                    </div>
+                </div>
+            </div>
+        </c:forEach>
+        <!-- 如果后端没传数据，下面这段占位代码会生效（测试时用） -->
+        <c:if test="${empty productList}">
+            <div class="col-6"><div class="product-card"><img src="https://via.placeholder.com/200x150?text=Latte" class="product-img"><div class="product-info"><div class="product-title">拿铁咖啡</div><div class="product-price">¥ 22.00</div></div></div></div>
+            <div class="col-6"><div class="product-card"><img src="https://via.placeholder.com/200x150?text=Americano" class="product-img"><div class="product-info"><div class="product-title">美式咖啡</div><div class="product-price">¥ 18.00</div></div></div></div>
+        </c:if>
+    </div>
 </div>
 
-<!-- 底部导航 -->
-<div class="footer-nav">
-    <div class="nav-item active" onclick="location.href='index.jsp'">
-        <span class="nav-icon">🏠</span>
-        首页
-    </div>
-    <div class="nav-item" onclick="location.href='coffeeList.jsp'">
-        <span class="nav-icon">🍹</span>
-        点单
-    </div>
-    <div class="nav-item" onclick="location.href='myOrder.jsp'">
-        <span class="nav-icon">📋</span>
-        订单
-    </div>
-    <div class="nav-item" onclick="location.href='personal.jsp'">
-        <span class="nav-icon">👤</span>
-        我的
-    </div>
+<br><br><br>
+
+<!-- 4. 底部导航栏 -->
+<div class="bottom-nav">
+    <a href="index.jsp" class="nav-item active">
+        <i class="bi bi-house-fill"></i> 首页
+    </a>
+    <a href="#" class="nav-item">
+        <i class="bi bi-grid-3x3-gap-fill"></i> 点单
+    </a>
+    <a href="#" class="nav-item">
+        <i class="bi bi-clipboard-check"></i> 订单
+    </a>
+    <a href="#" class="nav-item">
+        <i class="bi bi-person"></i> 我的
+    </a>
 </div>
+
 </body>
 </html>
