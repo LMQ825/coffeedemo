@@ -73,6 +73,13 @@
           <option value="0">下架</option>
         </select>
       </div>
+      <div class="form-group">
+        <label>是否新品</label>
+        <select name="isNew">
+          <option value="0">否</option>
+          <option value="1">是</option>
+        </select>
+      </div>
       <div>
         <button class="btn-submit" type="submit">确认添加</button>
         <a class="btn-back" href="${pageContext.request.contextPath}/admin/ProductListServlet">返回列表</a>

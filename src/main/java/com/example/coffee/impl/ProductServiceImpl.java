@@ -43,4 +43,13 @@ public class ProductServiceImpl implements ProductService {
     public int upProduct(int id) {
         return productDao.upProduct(id);
     }
+    @Override
+    public List<Product> getProductsByCategory(String category) {
+        return productDao.selectProductsByCategory(category);
+    }
+
+    @Override
+    public List<Product> getNewProducts() {
+        return productDao.selectNewProducts();
+    }
 }

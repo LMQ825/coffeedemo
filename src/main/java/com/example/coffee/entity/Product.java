@@ -8,6 +8,8 @@ public class Product {
     private String imageUrl;
     private Integer status; // 1上架 0下架
 
+    private Integer isNew;  // 新增：是否新品
+
     public Integer getId() {
         return id;
     }
@@ -62,5 +64,12 @@ public class Product {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+    public Integer getIsNew() {
+        return isNew;
+    }
+
+    public void setIsNew(Integer isNew) {
+        this.isNew = isNew;
     }
 }

@@ -31,6 +31,9 @@ public class ProductAddServlet extends HttpServlet {
         String description = request.getParameter("description");
         String statusStr = request.getParameter("status");
 
+        String isNewStr = request.getParameter("isNew");
+// 在构建 Product 对象时增加
+
         // 处理图片上传
         String imageUrl = "";
         Part filePart = request.getPart("image");
@@ -56,6 +59,7 @@ public class ProductAddServlet extends HttpServlet {
         product.setDescription(description);
         product.setImageUrl(imageUrl);
         product.setStatus(Integer.parseInt(statusStr));
+        product.setIsNew(isNewStr != null && "1".equals(isNewStr) ? 1 : 0);
 
         int result = productService.addProduct(product);
         if (result > 0) {

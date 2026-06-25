@@ -94,6 +94,9 @@
           </c:if>
           <a class="action-btn btn-delete" href="${pageContext.request.contextPath}/admin/ProductDeleteServlet?id=${p.id}" onclick="return confirm('确定删除该饮品吗？')">删除</a>
         </td>
+        <th>新品</th>
+        <!-- 在 td 中 -->
+        <td>${p.isNew == 1 ? '✅' : ''}</td>
       </tr>
     </c:forEach>
     <c:if test="${empty pageBean.list}">

@@ -17,7 +17,7 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public List<Product> selectProductList(String keyword, int start, int pageSize) {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT id, name, price, category, description, image_url, status FROM product WHERE name LIKE ? OR category LIKE ? ORDER BY id DESC LIMIT ?, ?";
+        String sql = "SELECT id, name, price, category, description, image_url, status,is_new FROM product WHERE name LIKE ? OR category LIKE ? ORDER BY id DESC LIMIT ?, ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -39,6 +39,7 @@ public class ProductDaoImpl implements ProductDao {
                 p.setDescription(rs.getString("description"));
                 p.setImageUrl(rs.getString("image_url"));
                 p.setStatus(rs.getInt("status"));
+                p.setIsNew(rs.getInt("is_new"));
                 list.add(p);
             }
         } catch (Exception e) {
@@ -71,11 +72,74 @@ public class ProductDaoImpl implements ProductDao {
         }
         return count;
     }
+    @Override
+    public List<Product> selectProductsByCategory(String category) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT id, name, price, category, description, image_url, status, is_new FROM product WHERE status=1 AND category=? ORDER BY id DESC";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, category);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setId(rs.getInt("id"));
+                p.setName(rs.getString("name"));
+                p.setPrice(rs.getDouble("price"));
+                p.setCategory(rs.getString("category"));
+                p.setDescription(rs.getString("description"));
+                p.setImageUrl(rs.getString("image_url"));
+                p.setStatus(rs.getInt("status"));
+                p.setIsNew(rs.getInt("is_new"));
+
+                list.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return list;
+    }
+
+    @Override
+    public List<Product> selectNewProducts() {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT id, name, price, category, description, image_url, status, is_new FROM product WHERE status=1 AND is_new=1 ORDER BY id DESC";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setId(rs.getInt("id"));
+                p.setName(rs.getString("name"));
+                p.setPrice(rs.getDouble("price"));
+                p.setCategory(rs.getString("category"));
+                p.setDescription(rs.getString("description"));
+                p.setImageUrl(rs.getString("image_url"));
+                p.setStatus(rs.getInt("status"));
+                p.setIsNew(rs.getInt("is_new"));
+                list.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return list;
+    }
 
     @Override
     public Product selectProductById(int id) {
         Product p = null;
-        String sql = "SELECT id, name, price, category, description, image_url, status FROM product WHERE id=?";
+        String sql = "SELECT id, name, price, category, description, image_url, status ,is_new FROM product WHERE id=?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -93,6 +157,7 @@ public class ProductDaoImpl implements ProductDao {
                 p.setDescription(rs.getString("description"));
                 p.setImageUrl(rs.getString("image_url"));
                 p.setStatus(rs.getInt("status"));
+                p.setIsNew(rs.getInt("is_new"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,7 +170,7 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public int insertProduct(Product product) {
         int rows = 0;
-        String sql = "INSERT INTO product(name, price, category, description, image_url, status) VALUES(?,?,?,?,?,?)";
+        String sql = "INSERT INTO product(name, price, category, description, image_url, status, is_new) VALUES(?,?,?,?,?,?,?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
@@ -117,6 +182,7 @@ public class ProductDaoImpl implements ProductDao {
             pstmt.setString(4, product.getDescription());
             pstmt.setString(5, product.getImageUrl());
             pstmt.setInt(6, product.getStatus() != null ? product.getStatus() : 1);
+            pstmt.setInt(7, product.getIsNew() != null ? product.getIsNew() : 0);
             rows = pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,7 +195,7 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public int updateProduct(Product product) {
         int rows = 0;
-        String sql = "UPDATE product SET name=?, price=?, category=?, description=?, image_url=?, status=? WHERE id=?";
+        String sql = "UPDATE product SET name=?, price=?, category=?, description=?, image_url=?, status=?, is_new=? WHERE id=?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
@@ -141,7 +207,8 @@ public class ProductDaoImpl implements ProductDao {
             pstmt.setString(4, product.getDescription());
             pstmt.setString(5, product.getImageUrl());
             pstmt.setInt(6, product.getStatus());
-            pstmt.setInt(7, product.getId());
+            pstmt.setInt(7, product.getIsNew() != null ? product.getIsNew() : 0);
+            pstmt.setInt(8, product.getId());
             rows = pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

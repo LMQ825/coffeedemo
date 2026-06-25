@@ -31,6 +31,8 @@ public class ProductUpdateServlet extends HttpServlet {
         String description = request.getParameter("description");
         String statusStr = request.getParameter("status");
 
+        String isNewStr = request.getParameter("isNew");
+
         // 先查询原有数据，获取旧图片路径
         Product oldProduct = productService.getProductById(id);
 
@@ -61,6 +63,7 @@ public class ProductUpdateServlet extends HttpServlet {
         }
 
         Product product = new Product();
+        product.setIsNew("1".equals(isNewStr) ? 1 : 0);
         product.setId(id);
         product.setName(name);
         product.setPrice(Double.parseDouble(priceStr));
