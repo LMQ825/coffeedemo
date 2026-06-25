@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDaoImpl implements UserDao {
     private Connection conn;
@@ -82,6 +84,82 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         } finally {
             DBUtil.close(conn, pstmt, rs);
+        }
+        return rows;
+    }
+    @Override
+    public List<User> selectUserList(String keyword, int start, int pageSize) {
+        List<User> list = new ArrayList<>();
+        String sql = "SELECT id, username, password, phone, address, status FROM user WHERE username LIKE ? OR phone LIKE ? ORDER BY id DESC LIMIT ?, ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            String like = "%" + (keyword == null ? "" : keyword) + "%";
+            pstmt.setString(1, like);
+            pstmt.setString(2, like);
+            pstmt.setInt(3, start);
+            pstmt.setInt(4, pageSize);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("id"));
+                u.setUsername(rs.getString("username"));
+                u.setPassword(rs.getString("password"));
+                u.setPhone(rs.getString("phone"));
+                u.setAddress(rs.getString("address"));
+                u.setStatus(rs.getInt("status"));
+                list.add(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return list;
+    }
+
+    @Override
+    public int selectUserCount(String keyword) {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM user WHERE username LIKE ? OR phone LIKE ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            String like = "%" + (keyword == null ? "" : keyword) + "%";
+            pstmt.setString(1, like);
+            pstmt.setString(2, like);
+            rs = pstmt.executeQuery();
+            if (rs.next()) count = rs.getInt(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return count;
+    }
+
+    @Override
+    public int updateUserStatus(int userId, int status) {
+        int rows = 0;
+        String sql = "UPDATE user SET status=? WHERE id=?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, status);
+            pstmt.setInt(2, userId);
+            rows = pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt);
         }
         return rows;
     }

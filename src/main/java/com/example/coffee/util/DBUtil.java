@@ -7,13 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DBUtil {
-    // 数据库配置，修改为你本地MySQL账号密码
-    private static final String DRIVER = "com.mysql.jdbc.Driver";
-    private static final String URL = "jdbc:mysql://localhost:3306/coffee_db?useSSL=false&serverTimezone=UTC&characterEncoding=utf8mb4";
+    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static final String URL = "jdbc:mysql://localhost:3306/coffee_demo?useSSL=false";
     private static final String USER = "root";
     private static final String PWD = "lmqLMQ200508*";
 
-    // 获取连接
     public static Connection getConnection() {
         Connection conn = null;
         try {
@@ -25,7 +23,6 @@ public class DBUtil {
         return conn;
     }
 
-    // 关闭资源重载方法
     public static void close(Connection conn, PreparedStatement pstmt, ResultSet rs) {
         try {
             if (rs != null) rs.close();
