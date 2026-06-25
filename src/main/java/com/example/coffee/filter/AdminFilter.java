@@ -20,21 +20,20 @@ public class AdminFilter implements Filter {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=utf-8");
 
-        HttpSession session = request.getSession();
-        Object adminUser = session.getAttribute("adminUser");
-
+        // 放行登录请求（虽然现在用 login.jsp，但保留兼容）
         String uri = request.getRequestURI();
-        // 登录页面和登录Servlet放行
-        if (uri.endsWith("adminLogin.jsp") || uri.endsWith("AdminLoginServlet")) {
+        if (uri.endsWith("login.jsp") || uri.endsWith("LoginServlet")) {
             chain.doFilter(req, resp);
             return;
         }
 
+        HttpSession session = request.getSession();
+        Object adminUser = session.getAttribute("adminUser");
         if (adminUser == null) {
-            response.sendRedirect(request.getContextPath() + "/adminLogin.jsp");
+            // 没有管理员登录，跳转到登录页（并带上提示）
+            response.sendRedirect(request.getContextPath() + "/login.jsp?role=admin");
             return;
         }
-
         chain.doFilter(req, resp);
     }
 

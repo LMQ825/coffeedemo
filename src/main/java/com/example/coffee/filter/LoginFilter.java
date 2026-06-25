@@ -25,23 +25,35 @@ public class LoginFilter implements Filter {
         response.setContentType("text/html;charset=utf-8");
 
         String uri = request.getRequestURI();
-        // 无需登录放行页面
+        String contextPath = request.getContextPath();
+        String path = uri.substring(contextPath.length());
+
+        // 后台 /admin/* 区域由 AdminFilter 负责鉴权，这里直接放行，
+        // 避免把已登录的管理员（session 中是 adminUser 而非 loginUser）误导向用户登录页
+        if (path.startsWith("/admin/")) {
+            chain.doFilter(req, resp);
+            return;
+        }
+
+        // 无需登录放行页面（大小写不敏感匹配）
         String[] freeResource = {
                 "splash.jsp",
                 "index.jsp",
-                "coffeeList.jsp",
+                "coffeelist.jsp",
                 "login.jsp",
                 "register.jsp",
-                "LoginServlet",
-                "RegisterServlet",
+                "loginservlet",
+                "registerservlet",
+                "logoutservlet",
                 "css/",
                 "js/",
                 "images/"
         };
 
+        String pathLower = path.toLowerCase();
         boolean isFree = false;
-        for (String path : freeResource) {
-            if (uri.contains(path)) {
+        for (String p : freeResource) {
+            if (pathLower.contains(p)) {
                 isFree = true;
                 break;
             }

@@ -7,8 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DBUtil {
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String URL = "jdbc:mysql://localhost:3306/coffee_demo?useSSL=false";
+    private static final String DRIVER = "com.mysql.jdbc.Driver";
+    private static final String URL = "jdbc:mysql://localhost:3306/coffee_demo?useSSL=false&useUnicode=true&characterEncoding=UTF-8";
     private static final String USER = "root";
     private static final String PWD = "lmqLMQ200508*";
 
@@ -17,7 +17,7 @@ public class DBUtil {
         try {
             Class.forName(DRIVER);
             conn = DriverManager.getConnection(URL, USER, PWD);
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return conn;
