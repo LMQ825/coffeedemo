@@ -1,5 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+  String type = request.getParameter("type");
+  if(type == null) type = "";
+%>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -19,7 +23,9 @@
     .coffee-info {padding:10px;}
     .coffee-name {font-weight:bold;font-size:15px;margin-bottom:4px;}
     .coffee-price {color:#C9B48E;font-weight:bold;}
-    .add-cart-btn {width:100%;margin-top:8px;padding:6px 0;background:#C9B48E;color:#fff;border:none;border-radius:12px;cursor:pointer;}
+    .add-cart-btn {flex:1;padding:6px 0;background:#C9B48E;color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:13px;}
+    .btn-row {display:flex;gap:6px;margin-top:8px;}
+    .buy-now-btn {flex:1;padding:6px 0;background:#fff;color:#C9B48E;border:1px solid #C9B48E;border-radius:12px;cursor:pointer;font-size:13px;}
     /* 底部导航 移除图标样式 */
     .footer-nav {position:fixed;bottom:0;left:0;width:100%;background:#fff;display:flex;padding:8px 0;border-top:1px solid #E9D9C2;}
     .nav-item {flex:1;text-align:center;font-size:14px;}
@@ -33,16 +39,19 @@
   <span>🔍</span>
 </div>
 
-<!-- 已删除分类标签区域 -->
-
 <!-- 饮品列表 四列布局 -->
 <div class="coffee-container">
+  <%-- 全部 --%>
+  <% if(type.equals("") || type.equals("意式咖啡")){ %>
   <div class="coffee-card">
     <div class="coffee-img">☕</div>
     <div class="coffee-info">
       <div class="coffee-name">经典拿铁</div>
       <div class="coffee-price">¥22</div>
-      <button class="add-cart-btn" onclick="location.href='cartAddServlet?coffeeId=1'">加入购物车</button>
+      <div class="btn-row">
+        <button class="buy-now-btn" onclick="location.href='checkout.jsp?cid=1'">直接购买</button>
+        <button class="add-cart-btn" onclick="location.href='CartAddServlet?coffeeId=1'">加购</button>
+      </div>
     </div>
   </div>
   <div class="coffee-card">
@@ -50,25 +59,43 @@
     <div class="coffee-info">
       <div class="coffee-name">焦糖玛奇朵</div>
       <div class="coffee-price">¥24</div>
-      <button class="add-cart-btn" onclick="location.href='cartAddServlet?coffeeId=2'">加入购物车</button>
+      <div class="btn-row">
+        <button class="buy-now-btn" onclick="location.href='checkout.jsp?cid=2'">直接购买</button>
+        <button class="add-cart-btn" onclick="location.href='CartAddServlet?coffeeId=2'">加购</button>
+      </div>
     </div>
   </div>
+  <% } %>
+
+  <% if(type.equals("") || type.equals("甜品小食")){ %>
   <div class="coffee-card">
     <div class="coffee-img">🍰</div>
     <div class="coffee-info">
       <div class="coffee-name">提拉米苏</div>
       <div class="coffee-price">¥18</div>
-      <button class="add-cart-btn" onclick="location.href='cartAddServlet?coffeeId=3'">加入购物车</button>
+      <div class="btn-row">
+        <button class="buy-now-btn" onclick="location.href='checkout.jsp?cid=3'">直接购买</button>
+        <button class="add-cart-btn" onclick="location.href='CartAddServlet?coffeeId=3'">加购</button>
+      </div>
     </div>
   </div>
+  <% } %>
+
+  <% if(type.equals("") || type.equals("特调饮品")){ %>
   <div class="coffee-card">
     <div class="coffee-img">🫧</div>
     <div class="coffee-info">
       <div class="coffee-name">荔枝气泡美式</div>
       <div class="coffee-price">¥26</div>
-      <button class="add-cart-btn" onclick="location.href='cartAddServlet?coffeeId=4'">加入购物车</button>
+      <div class="btn-row">
+        <button class="buy-now-btn" onclick="location.href='checkout.jsp?cid=4'">直接购买</button>
+        <button class="add-cart-btn" onclick="location.href='CartAddServlet?coffeeId=4'">加购</button>
+      </div>
     </div>
   </div>
+  <% } %>
+
+  <%-- 冷萃/特色美式后续扩充商品直接加对应判断即可 --%>
 </div>
 
 <!-- 底部导航 移除图标span -->

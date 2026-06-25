@@ -32,11 +32,11 @@ public class AdminLoginServlet extends HttpServlet {
         if (admin != null) {
             System.out.println("登录成功，管理员ID=" + admin.getId());  // 打印成功
             session.setAttribute("adminUser", admin);
-            response.sendRedirect(request.getContextPath() + "/adminIndex.jsp");
+            response.sendRedirect(request.getContextPath() + "/admin/index.jsp");
         } else {
             System.out.println("登录失败，用户名或密码错误");
             request.setAttribute("msg", "用户名或密码错误！");
-            request.getRequestDispatcher("adminLogin.jsp").forward(request, response);
+            request.getRequestDispatcher("/admin/login.jsp").forward(request, response);
         }
     }
 }

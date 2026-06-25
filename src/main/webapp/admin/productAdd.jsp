@@ -1,9 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>新增饮品</title>
+  <title>新增饮品 - 咩嘢熊仔后台</title>
   <style>
     * {margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑";}
     body {display:flex;min-height:100vh;background:#f5ede4;}
@@ -11,8 +12,8 @@
     .logo {text-align:center;padding:0 20px 30px;border-bottom:1px solid #7D664F;}
     .logo h2 {font-size:20px;}
     .nav {padding:20px 10px;}
-    .nav a {display:block;padding:12px 18px;color:#E9D9C2;text-decoration:none;border-radius:8px;margin-bottom:4px;}
-    .nav a:hover {background:#7D664F;color:#fff;}
+    .nav a {display:block;padding:12px 18px;color:#E9D9C2;text-decoration:none;border-radius:8px;margin-bottom:4px;transition:0.2s;}
+    .nav a:hover,.nav a.active {background:#7D664F;color:#fff;}
     .main {flex:1;padding:30px;}
     .main .header {display:flex;justify-content:space-between;margin-bottom:20px;}
     .main .header h3 {color:#5C4836;}
@@ -33,9 +34,10 @@
   <div class="nav">
     <a href="${pageContext.request.contextPath}/admin/index.jsp">📊 仪表盘</a>
     <a href="${pageContext.request.contextPath}/admin/OrderListServlet">📋 订单管理</a>
-    <a href="${pageContext.request.contextPath}/admin/ProductListServlet">☕ 饮品管理</a>
+    <a class="active" href="${pageContext.request.contextPath}/admin/ProductListServlet">☕ 饮品管理</a>
     <a href="${pageContext.request.contextPath}/admin/UserListServlet">👤 用户管理</a>
-    <a href="${pageContext.request.contextPath}/AdminLogoutServlet" style="margin-top:30px;color:#d9534f;">🚪 退出</a>
+    <a href="${pageContext.request.contextPath}/admin/bannerList.jsp">🖼️ 轮播图管理</a>
+    <a href="${pageContext.request.contextPath}/AdminLogoutServlet" style="margin-top:30px;color:#d9534f;">🚪 退出登录</a>
   </div>
 </div>
 <div class="main">
@@ -79,5 +81,4 @@
   </div>
 </div>
 </body>
-//1
 </html>

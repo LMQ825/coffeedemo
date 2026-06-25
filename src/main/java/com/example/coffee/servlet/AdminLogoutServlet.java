@@ -14,6 +14,6 @@ public class AdminLogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         session.removeAttribute("adminUser");
-        response.sendRedirect(request.getContextPath() + "/adminLogin.jsp");
+        response.sendRedirect(request.getContextPath() + "/admin/login.jsp");
     }
 }

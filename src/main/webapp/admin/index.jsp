@@ -37,6 +37,7 @@
         <a href="${pageContext.request.contextPath}/admin/OrderListServlet">📋 订单管理</a>
         <a href="${pageContext.request.contextPath}/admin/ProductListServlet">☕ 饮品管理</a>
         <a href="${pageContext.request.contextPath}/admin/UserListServlet">👤 用户管理</a>
+        <a href="${pageContext.request.contextPath}/admin/bannerList.jsp">🖼️ 轮播图管理</a>
         <a href="${pageContext.request.contextPath}/AdminLogoutServlet" style="margin-top:30px;color:#d9534f;">🚪 退出登录</a>
     </div>
 </div>
@@ -53,9 +54,8 @@
             <div class="stat-card"><div class="num">0</div><div class="label">注册用户</div></div>
         </div>
         <p style="color:#a8937b;font-size:14px;">💡 欢迎回来，后台管理功能已准备就绪。</p>
-        <p style="color:#a8937b;font-size:14px;margin-top:8px;">点击左侧菜单管理订单、饮品和用户。</p>
+        <p style="color:#a8937b;font-size:14px;margin-top:8px;">点击左侧菜单管理订单、饮品、用户和轮播图。</p>
     </div>
-    //1
 </div>
 </body>
 </html>

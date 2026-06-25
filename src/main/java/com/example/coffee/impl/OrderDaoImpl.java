@@ -8,6 +8,7 @@ import com.example.coffee.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,5 +168,108 @@ public class OrderDaoImpl implements OrderDao {
             DBUtil.close(conn, pstmt, rs);
         }
         return list;
+    }
+
+    @Override
+    public int insertOrder(Order order) {
+        int id = 0;
+        String sql = "INSERT INTO `order`(order_no, user_id, total_price, status, remark, create_time) VALUES(?,?,?,?,?,NOW())";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, order.getOrderNo());
+            pstmt.setInt(2, order.getUserId());
+            pstmt.setDouble(3, order.getTotalPrice());
+            pstmt.setInt(4, order.getStatus() == null ? 0 : order.getStatus());
+            pstmt.setString(5, order.getRemark());
+            pstmt.executeUpdate();
+            rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                id = rs.getInt(1);
+                order.setId(id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return id;
+    }
+
+    @Override
+    public int insertOrderItem(OrderItem item) {
+        int rows = 0;
+        String sql = "INSERT INTO order_item(order_id, product_id, quantity, price) VALUES(?,?,?,?)";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, item.getOrderId());
+            pstmt.setInt(2, item.getProductId());
+            pstmt.setInt(3, item.getQuantity());
+            pstmt.setDouble(4, item.getPrice());
+            rows = pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt);
+        }
+        return rows;
+    }
+
+    @Override
+    public List<Order> selectOrdersByUserId(int userId) {
+        List<Order> list = new ArrayList<>();
+        String sql = "SELECT id, order_no, user_id, total_price, status, create_time, pay_time, remark " +
+                "FROM `order` WHERE user_id=? ORDER BY id DESC";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Order o = new Order();
+                o.setId(rs.getInt("id"));
+                o.setOrderNo(rs.getString("order_no"));
+                o.setUserId(rs.getInt("user_id"));
+                o.setTotalPrice(rs.getDouble("total_price"));
+                o.setStatus(rs.getInt("status"));
+                o.setCreateTime(rs.getTimestamp("create_time"));
+                o.setPayTime(rs.getTimestamp("pay_time"));
+                o.setRemark(rs.getString("remark"));
+                list.add(o);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return list;
+    }
+
+    @Override
+    public int payOrder(int orderId) {
+        int rows = 0;
+        String sql = "UPDATE `order` SET status=1, pay_time=NOW() WHERE id=?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, orderId);
+            rows = pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt);
+        }
+        return rows;
     }
 }

@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
                 if (preUrl != null && preUrl.contains("/admin/")) {
                     response.sendRedirect(preUrl);
                 } else {
-                    response.sendRedirect(request.getContextPath() + "/adminIndex.jsp");
+                    response.sendRedirect(request.getContextPath() + "/admin/index.jsp");
                 }
                 return;
             } else {

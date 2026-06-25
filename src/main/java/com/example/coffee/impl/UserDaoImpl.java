@@ -1,7 +1,4 @@
 package com.example.coffee.impl;
-
-
-
 import com.example.coffee.dao.UserDao;
 import com.example.coffee.entity.User;
 import com.example.coffee.util.DBUtil;
@@ -21,8 +18,14 @@ public class UserDaoImpl implements UserDao {
     public User selectUserByNameAndPwd(String username, String password) {
         User user = null;
         String sql = "select id,username,password,phone,address from user where username=? and password=?";
+        // 获取连接
+        conn = DBUtil.getConnection();
+        // 增加判空，避免空指针
+        if(conn == null){
+            System.out.println("数据库连接失败！检查账号密码/MySQL服务/驱动包");
+            return null;
+        }
         try {
-            conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
             pstmt.setString(2, password);
@@ -47,8 +50,12 @@ public class UserDaoImpl implements UserDao {
     public User selectUserByUsername(String username) {
         User user = null;
         String sql = "select id,username,password,phone,address from user where username=?";
+        conn = DBUtil.getConnection();
+        if(conn == null){
+            System.out.println("数据库连接失败！");
+            return null;
+        }
         try {
-            conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, username);
             rs = pstmt.executeQuery();
@@ -72,8 +79,12 @@ public class UserDaoImpl implements UserDao {
     public int insertUser(User user) {
         int rows = 0;
         String sql = "insert user(username,password,phone,address) values(?,?,?,?)";
+        conn = DBUtil.getConnection();
+        if(conn == null){
+            System.out.println("数据库连接失败！");
+            return 0;
+        }
         try {
-            conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, user.getUsername());
             pstmt.setString(2, user.getPassword());

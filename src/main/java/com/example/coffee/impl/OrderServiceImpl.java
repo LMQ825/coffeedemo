@@ -34,4 +34,26 @@ public class OrderServiceImpl implements OrderService {
     public int updateOrderStatus(int orderId, int status) {
         return orderDao.updateOrderStatus(orderId, status);
     }
+
+    @Override
+    public int createOrder(Order order, List<OrderItem> items) {
+        int orderId = orderDao.insertOrder(order);
+        if (orderId > 0 && items != null) {
+            for (OrderItem item : items) {
+                item.setOrderId(orderId);
+                orderDao.insertOrderItem(item);
+            }
+        }
+        return orderId;
+    }
+
+    @Override
+    public List<Order> listUserOrders(int userId) {
+        return orderDao.selectOrdersByUserId(userId);
+    }
+
+    @Override
+    public int payOrder(int orderId) {
+        return orderDao.payOrder(orderId);
+    }
 }

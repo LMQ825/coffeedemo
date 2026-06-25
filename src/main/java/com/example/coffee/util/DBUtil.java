@@ -8,16 +8,16 @@ import java.sql.SQLException;
 
 public class DBUtil {
     private static final String DRIVER = "com.mysql.jdbc.Driver";
-    private static final String URL = "jdbc:mysql://localhost:3306/coffee_demo?useSSL=false&useUnicode=true&characterEncoding=UTF-8";
+    private static final String URL = "jdbc:mysql://localhost:3306/coffee_db?useSSL=false";
     private static final String USER = "root";
-    private static final String PWD = "lmqLMQ200508*";
+    private static final String PWD = "123456";
 
     public static Connection getConnection() {
         Connection conn = null;
         try {
             Class.forName(DRIVER);
             conn = DriverManager.getConnection(URL, USER, PWD);
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
         return conn;

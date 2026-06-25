@@ -16,4 +16,12 @@ public interface OrderDao {
     int updateOrderStatus(int orderId, int status);
     // 根据订单ID查询明细（关联商品名称）
     List<OrderItem> selectOrderItemsByOrderId(int orderId);
+    // 新增订单主表，返回自增主键 id
+    int insertOrder(Order order);
+    // 新增订单明细
+    int insertOrderItem(OrderItem item);
+    // 根据用户ID查询其订单（按时间倒序）
+    List<Order> selectOrdersByUserId(int userId);
+    // 订单支付：状态置为待取餐(1)并记录支付时间
+    int payOrder(int orderId);
 }
