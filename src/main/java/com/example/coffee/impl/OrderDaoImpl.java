@@ -10,7 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderDaoImpl implements OrderDao {
 
@@ -271,5 +273,229 @@ public class OrderDaoImpl implements OrderDao {
             DBUtil.close(conn, pstmt);
         }
         return rows;
+    }
+    
+    // ========== 统计方法实现 ==========
+    
+    @Override
+    public Double selectTodaySales() {
+        Double sales = 0.0;
+        String sql = "SELECT SUM(total_price) FROM `order` WHERE DATE(create_time) = CURDATE() AND status >= 1";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                sales = rs.getDouble(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return sales;
+    }
+    
+    @Override
+    public int selectTodayOrderCount() {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM `order` WHERE DATE(create_time) = CURDATE()";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return count;
+    }
+    
+    @Override
+    public Double selectSalesByDateRange(java.util.Date startDate, java.util.Date endDate) {
+        Double sales = 0.0;
+        String sql = "SELECT SUM(total_price) FROM `order` WHERE create_time >= ? AND create_time <= ? AND status >= 1";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setTimestamp(1, new java.sql.Timestamp(startDate.getTime()));
+            pstmt.setTimestamp(2, new java.sql.Timestamp(endDate.getTime()));
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                sales = rs.getDouble(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return sales;
+    }
+    
+    @Override
+    public int selectPendingOrderCount() {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM `order` WHERE status = 1"; // 待取餐状态
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return count;
+    }
+    
+    @Override
+    public List<Map<String, Object>> selectTopSellingProducts(int limit) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT p.name, p.category, SUM(oi.quantity) as total_sales, SUM(oi.quantity * oi.price) as total_revenue " +
+                     "FROM order_item oi " +
+                     "JOIN product p ON oi.product_id = p.id " +
+                     "JOIN `order` o ON oi.order_id = o.id " +
+                     "WHERE o.status >= 1 " +
+                     "GROUP BY oi.product_id " +
+                     "ORDER BY total_sales DESC " +
+                     "LIMIT ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, limit);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", rs.getString("name"));
+                map.put("category", rs.getString("category"));
+                map.put("totalSales", rs.getInt("total_sales"));
+                map.put("totalRevenue", rs.getDouble("total_revenue"));
+                list.add(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> selectOrderStatusDistribution() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT status, COUNT(*) as count FROM `order` GROUP BY status ORDER BY status";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                int status = rs.getInt("status");
+                map.put("status", status);
+                map.put("statusText", getStatusText(status));
+                map.put("count", rs.getInt("count"));
+                list.add(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> selectDailySalesLast7Days() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT DATE(create_time) as date, SUM(total_price) as sales, COUNT(*) as orders " +
+                     "FROM `order` WHERE create_time >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND status >= 1 " +
+                     "GROUP BY DATE(create_time) ORDER BY date ASC";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("date", rs.getDate("date"));
+                map.put("sales", rs.getDouble("sales"));
+                map.put("orders", rs.getInt("orders"));
+                list.add(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return list;
+    }
+    
+    @Override
+    public List<Map<String, Object>> selectCategorySalesDistribution() {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String sql = "SELECT p.category, SUM(oi.quantity) as total_sales, SUM(oi.quantity * oi.price) as total_revenue " +
+                     "FROM order_item oi " +
+                     "JOIN product p ON oi.product_id = p.id " +
+                     "JOIN `order` o ON oi.order_id = o.id " +
+                     "WHERE o.status >= 1 AND p.category IS NOT NULL " +
+                     "GROUP BY p.category " +
+                     "ORDER BY total_revenue DESC";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("category", rs.getString("category"));
+                map.put("totalSales", rs.getInt("total_sales"));
+                map.put("totalRevenue", rs.getDouble("total_revenue"));
+                list.add(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return list;
+    }
+    
+    private String getStatusText(int status) {
+        switch (status) {
+            case 0: return "待付款";
+            case 1: return "待取餐";
+            case 2: return "已完成";
+            case 3: return "已取消";
+            default: return "未知";
+        }
     }
 }

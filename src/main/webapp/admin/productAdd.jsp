@@ -35,7 +35,10 @@
     <a href="${pageContext.request.contextPath}/admin/index.jsp">📊 仪表盘</a>
     <a href="${pageContext.request.contextPath}/admin/OrderListServlet">📋 订单管理</a>
     <a class="active" href="${pageContext.request.contextPath}/admin/ProductListServlet">☕ 饮品管理</a>
-    <a href="${pageContext.request.contextPath}/admin/UserListServlet">👤 用户管理</a>
+    <a href="${pageContext.request.contextPath}/admin/CategoryListServlet">🏷️ 分类管理</a>
+	    <a href="${pageContext.request.contextPath}/admin/UserListServlet">👤 用户管理</a>
+	    <a href="${pageContext.request.contextPath}/admin/bannerList.jsp">🖼️ 轮播图管理</a>
+	    <a href="${pageContext.request.contextPath}/admin/StatisticsServlet">📈 销售统计</a>
     <a href="${pageContext.request.contextPath}/admin/bannerList.jsp">🖼️ 轮播图管理</a>
     <a href="${pageContext.request.contextPath}/AdminLogoutServlet" style="margin-top:30px;color:#d9534f;">🚪 退出登录</a>
   </div>
