@@ -1,11 +1,14 @@
 package com.example.coffee.servlet;
 
 import com.example.coffee.entity.Admin;
+import com.example.coffee.entity.CartItem;
 import com.example.coffee.entity.User;
 import com.example.coffee.impl.AdminServiceImpl;
+import com.example.coffee.impl.CartDaoImpl;
 import com.example.coffee.impl.UserServiceImpl;
 import com.example.coffee.service.AdminService;
 import com.example.coffee.service.UserService;
+import com.example.coffee.dao.CartDao;
 import com.example.coffee.impl.AdminServiceImpl;
 import com.example.coffee.impl.UserServiceImpl;
 
@@ -55,6 +58,14 @@ public class LoginServlet extends HttpServlet {
             User user = userService.login(username, password);
             if (user != null) {
                 session.setAttribute("loginUser", user);
+                
+                // 从数据库加载购物车
+                CartDao cartDao = new CartDaoImpl();
+                java.util.List<CartItem> dbCart = cartDao.selectUserCart(user.getId());
+                if (dbCart != null && !dbCart.isEmpty()) {
+                    session.setAttribute("cart", dbCart);
+                }
+                
                 if (preUrl != null && !preUrl.isEmpty()) {
                     response.sendRedirect(preUrl);
                 } else {

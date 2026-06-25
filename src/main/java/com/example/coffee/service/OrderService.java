@@ -16,4 +16,8 @@ public interface OrderService {
     List<Order> listUserOrders(int userId);
     // 支付订单
     int payOrder(int orderId);
+    // 根据订单ID查询订单(不加载明细)
+    Order getOrderById(int orderId);
+    // 查询订单明细
+    List<OrderItem> getOrderItems(int orderId);
 }

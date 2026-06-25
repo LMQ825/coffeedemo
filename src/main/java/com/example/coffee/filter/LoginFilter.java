@@ -35,19 +35,27 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        // 无需登录放行页面（大小写不敏感匹配）
+        // 无需登录放行页面(大小写不敏感匹配)
         String[] freeResource = {
                 "splash.jsp",
                 "index.jsp",
                 "coffeelist.jsp",
                 "login.jsp",
                 "register.jsp",
-                "loginservlet",
-                "registerservlet",
-                "logoutservlet",
+                "/loginservlet",
+                "/registerservlet",
+                "/logoutservlet",
+                "/userlogoutservlet",
+                "/productlistservlet",
+                "/cartaddservlet",
+                "/cartupdateservlet",
+                "/ordersubmitservlet",
+                "/orderlistservlet",
+                "/payservlet",
                 "css/",
                 "js/",
-                "images/"
+                "images/",
+                "uploads/"
         };
 
         String pathLower = path.toLowerCase();

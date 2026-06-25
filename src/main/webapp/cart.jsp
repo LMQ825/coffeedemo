@@ -73,7 +73,7 @@
 
         <div class="settle-bar">
             <div class="total-text">合计：<span class="total-price">¥<fmt:formatNumber value="${cartTotal}" pattern="#"/></span></div>
-            <button class="submit-btn" onclick="goPay()">去结算</button>
+            <button class="submit-btn" onclick="goPay()">结算</button>
         </div>
     </c:otherwise>
 </c:choose>
@@ -94,7 +94,8 @@
             location.href = "login.jsp";
             return;
         }
-        location.href = "orderSubmit.jsp";
+        // 提交订单到服务器
+        location.href = "${pageContext.request.contextPath}/OrderSubmitServlet?mode=cart";
     }
 </script>
 </body>

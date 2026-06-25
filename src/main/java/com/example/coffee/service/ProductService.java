@@ -15,4 +15,6 @@ public interface ProductService {
     // 新增用户端方法
     List<Product> getProductsByCategory(String category);
     List<Product> getNewProducts();
+    // 新增:搜索商品
+    List<Product> searchProducts(String keyword);
 }

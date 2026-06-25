@@ -80,6 +80,7 @@ public class OrderSubmitServlet extends HttpServlet {
 
             OrderItem oi = new OrderItem();
             oi.setProductId(cid);
+            oi.setProductName(bi.getName());  // 设置商品名称
             oi.setQuantity(qty);
             oi.setPrice(unitPrice);
             items.add(oi);
@@ -100,6 +101,7 @@ public class OrderSubmitServlet extends HttpServlet {
 
                 OrderItem oi = new OrderItem();
                 oi.setProductId(ci.getProductId());
+                oi.setProductName(ci.getName());  // 设置商品名称
                 oi.setQuantity(ci.getQuantity());
                 oi.setPrice(ci.getPrice());
                 items.add(oi);
@@ -112,11 +114,25 @@ public class OrderSubmitServlet extends HttpServlet {
             order.setRemark(remark.toString());
 
             session.removeAttribute("cart");
+            
+            // 清空数据库购物车
+            com.example.coffee.dao.CartDao cartDao = new com.example.coffee.impl.CartDaoImpl();
+            cartDao.clearUserCart(user.getId());
         }
 
         int orderId = orderService.createOrder(order, items);
+        System.out.println("[OrderSubmitServlet] 订单创建结果: orderId=" + orderId + ", userId=" + user.getId() + ", items数量=" + items.size());
         if (orderId > 0) {
-            response.sendRedirect(request.getContextPath() + "/payment.jsp?orderId=" + orderId);
+            // 检查是否是 AJAX 请求
+            String requestedWith = request.getHeader("X-Requested-With");
+            if ("XMLHttpRequest".equals(requestedWith)) {
+                // AJAX 请求，返回 JSON
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"orderId\":" + orderId + ",\"totalPrice\":" + order.getTotalPrice() + ",\"orderNo\":\"" + order.getOrderNo() + "\"}");
+            } else {
+                // 普通请求，跳转到 payment.jsp
+                response.sendRedirect(request.getContextPath() + "/payment.jsp?orderId=" + orderId);
+            }
         } else {
             request.setAttribute("msg", "订单创建失败，请重试");
             request.getRequestDispatcher("coffeeList.jsp").forward(request, response);

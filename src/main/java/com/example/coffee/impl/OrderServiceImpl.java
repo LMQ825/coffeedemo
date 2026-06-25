@@ -49,11 +49,37 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> listUserOrders(int userId) {
-        return orderDao.selectOrdersByUserId(userId);
+        System.out.println("[OrderServiceImpl] 查询用户订单: userId=" + userId);
+        List<Order> orders = orderDao.selectOrdersByUserId(userId);
+        System.out.println("[OrderServiceImpl] 查询到订单数量: " + (orders == null ? 0 : orders.size()));
+        // 为每个订单加载订单明细（商品信息）
+        if (orders != null) {
+            for (Order order : orders) {
+                List<OrderItem> items = orderDao.selectOrderItemsByOrderId(order.getId());
+                order.setItems(items);
+                System.out.println("[OrderServiceImpl] 订单ID=" + order.getId() + ", 商品数量=" + (items == null ? 0 : items.size()));
+                if (items != null) {
+                    for (OrderItem item : items) {
+                        System.out.println("[OrderServiceImpl]   - 商品: " + item.getProductName() + ", 数量=" + item.getQuantity());
+                    }
+                }
+            }
+        }
+        return orders;
     }
 
     @Override
     public int payOrder(int orderId) {
         return orderDao.payOrder(orderId);
+    }
+
+    @Override
+    public Order getOrderById(int orderId) {
+        return orderDao.selectOrderById(orderId);
+    }
+
+    @Override
+    public List<OrderItem> getOrderItems(int orderId) {
+        return orderDao.selectOrderItemsByOrderId(orderId);
     }
 }

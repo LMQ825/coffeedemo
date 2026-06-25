@@ -20,8 +20,10 @@ public interface ProductDao {
     int deleteProduct(int id);
     // 上架（status=1）
     int upProduct(int id);
-    // 新增：根据分类查询上架商品（用户端用）
+    // 新增:根据分类查询上架商品(用户端用)
     List<Product> selectProductsByCategory(String category);
-    // 新增：查询所有上架的新品
+    // 新增:查询所有上架的新品
     List<Product> selectNewProducts();
+    // 新增:根据关键词搜索商品(用户端用)
+    List<Product> searchProducts(String keyword);
 }

@@ -52,4 +52,9 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> getNewProducts() {
         return productDao.selectNewProducts();
     }
+
+    @Override
+    public List<Product> searchProducts(String keyword) {
+        return productDao.searchProducts(keyword);
+    }
 }

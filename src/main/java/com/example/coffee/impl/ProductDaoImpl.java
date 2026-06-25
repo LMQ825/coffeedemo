@@ -137,6 +137,41 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
+    public List<Product> searchProducts(String keyword) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT id, name, price, category, description, image_url, status, is_new FROM product WHERE status=1 AND (name LIKE ? OR category LIKE ? OR description LIKE ?) ORDER BY id DESC";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            String like = "%" + (keyword == null ? "" : keyword) + "%";
+            pstmt.setString(1, like);
+            pstmt.setString(2, like);
+            pstmt.setString(3, like);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setId(rs.getInt("id"));
+                p.setName(rs.getString("name"));
+                p.setPrice(rs.getDouble("price"));
+                p.setCategory(rs.getString("category"));
+                p.setDescription(rs.getString("description"));
+                p.setImageUrl(rs.getString("image_url"));
+                p.setStatus(rs.getInt("status"));
+                p.setIsNew(rs.getInt("is_new"));
+                list.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(conn, pstmt, rs);
+        }
+        return list;
+    }
+
+    @Override
     public Product selectProductById(int id) {
         Product p = null;
         String sql = "SELECT id, name, price, category, description, image_url, status ,is_new FROM product WHERE id=?";

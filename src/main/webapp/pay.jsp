@@ -22,11 +22,11 @@
 <div class="pay-price">支付金额：¥58</div>
 
 <div class="pay-item active" onclick="choosePay(this)">
-  <div class="pay-icon">💚</div>
+  <div class="pay-icon"></div>
   <div class="pay-text">微信支付</div>
 </div>
 <div class="pay-item" onclick="choosePay(this)">
-  <div class="pay-icon">💙</div>
+  <div class="pay-icon"></div>
   <div class="pay-text">支付宝支付</div>
 </div>
 

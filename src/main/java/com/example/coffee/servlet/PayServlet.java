@@ -26,8 +26,17 @@ public class PayServlet extends HttpServlet {
         if (orderId > 0) {
             orderService.payOrder(orderId);
         }
-        // 支付成功（模拟），跳转我的订单并提示
-        response.sendRedirect(request.getContextPath() + "/myOrder.jsp?msg=paySuccess&method=" + (payMethod == null ? "" : payMethod));
+        
+        // 检查是否是 AJAX 请求
+        String requestedWith = request.getHeader("X-Requested-With");
+        if ("XMLHttpRequest".equals(requestedWith)) {
+            // AJAX 请求，返回 JSON
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"success\":true,\"payMethod\":\"" + (payMethod == null ? "" : payMethod) + "\"}");
+        } else {
+            // 普通请求，跳转我的订单并提示
+            response.sendRedirect(request.getContextPath() + "/myOrder.jsp?msg=paySuccess&method=" + (payMethod == null ? "" : payMethod));
+        }
     }
 
     private int parseInt(String s) {
