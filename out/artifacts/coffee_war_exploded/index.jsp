@@ -1383,7 +1383,7 @@
                                         <div class="coffee-price">¥${p.price}</div>
                                         <div class="btn-row">
                                             <button class="buy-now-btn" onclick="openModal(${p.id},'${p.name}',${p.price},'${not empty p.imageUrl ? p.imageUrl : ''}')">直接购买</button>
-                                            <button class="add-cart-btn" onclick="openModal(${p.id},'${p.name}',${p.price},'${not empty p.imageUrl ? p.imageUrl : ''}')">加购</button>
+                                            <button class="add-cart-btn" onclick="openModal(${p.id},'${p.name}',${p.price},'${not empty p.imageUrl ? p.imageUrl : ''}')">加购物车</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1834,35 +1834,102 @@
     }
 
     function selectChip(el, group) {
-        var parent = el.parentElement;
-        var chips = parent.querySelectorAll('.spec-chip');
-        chips.forEach(function(c) { c.classList.remove('selected'); });
-        el.classList.add('selected');
+        const isMulti = (group === 'topping');
+        const container = el.parentElement; // 关键：直接取父容器
+        const allChips = container.querySelectorAll('.spec-chip, .opt-chip');
+
+        if (isMulti) {
+            if (el.classList.contains('selected')) {
+                el.classList.remove('selected');
+            } else {
+                el.classList.add('selected');
+                if (el.textContent.trim() !== '无') {
+                    allChips.forEach(c => {
+                        if (c.textContent.trim() === '无') c.classList.remove('selected');
+                    });
+                } else {
+                    allChips.forEach(c => {
+                        if (c !== el) c.classList.remove('selected');
+                    });
+                }
+            }
+        } else {
+            if (el.classList.contains('selected')) {
+                return; // 已选中，保持不变
+            }
+            allChips.forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
         updatePrice();
     }
 
+
+
     function getSelected(id) {
-        var sel = document.querySelector('#' + id + ' .spec-chip.selected');
-        return sel ? sel.textContent.replace(/\s*\(.*\)/, '').trim() : '';
+        var container = document.getElementById(id);
+        if (!container) return '';
+        var selected = container.querySelectorAll('.spec-chip.selected, .opt-chip.selected');
+
+        if (id === 'toppingChips') {
+            // 加料多选：排除“无”，返回用“+”拼接的字符串
+            var toppings = [];
+            selected.forEach(function(c) {
+                var text = c.textContent.replace(/\s*\(.*\)/, '').trim();
+                if (text !== '无') toppings.push(text);
+            });
+            return toppings.join('+');
+        } else {
+            // 单选组：返回选中的文本
+            return selected.length > 0 ? selected[0].textContent.replace(/\s*\(.*\)/, '').trim() : '';
+        }
     }
 
     function updatePrice() {
         var cup = getSelected('cupChips');
-        var topping = getSelected('toppingChips');
         var cupUp = (cup === '大杯') ? 3 : 0;
-        var topUp = (topping === '珍珠') ? 3 : (topping === '椰果' ? 3 : (topping === '奶盖' ? 5 : 0));
+
+        // 累加所有选中加料的价格
+        var topUp = 0;
+        document.querySelectorAll('#toppingChips .spec-chip.selected').forEach(function(c) {
+            var text = c.textContent.replace(/\s*\(.*\)/, '').trim();
+            if (text === '珍珠' || text === '椰果') topUp += 3;
+            else if (text === '奶盖') topUp += 5;
+        });
+
         var total = currentProduct.price + cupUp + topUp;
         document.getElementById('modalTotal').textContent = '¥' + total;
         document.getElementById('modalPriceDisp').textContent = '¥' + total;
     }
 
     function buildSpec() {
-        var cup = getSelected('cupChips'), temp = getSelected('tempChips'), sugar = getSelected('sugarChips'), topping = getSelected('toppingChips');
+        var cup = getSelected('cupChips'),
+            temp = getSelected('tempChips'),
+            sugar = getSelected('sugarChips'),
+            topping = getSelected('toppingChips') || '无';
         var remark = document.getElementById('specRemark').value.trim();
         var spec = cup + '/' + temp + '/' + sugar + '/' + topping;
         if (remark) spec += ' 备注:' + remark;
         return spec;
     }
+
+    function resetChips(id) {
+        var chips = document.querySelectorAll('#' + id + ' .spec-chip');
+        chips.forEach(function(c, i) {
+            c.classList.remove('selected');
+            if (id !== 'toppingChips' && i === 0) {
+                c.classList.add('selected');          // 单选组默认选中第一个
+            } else if (id === 'toppingChips' && c.textContent.trim() === '无') {
+                c.classList.add('selected');          // 加料组默认选中“无”
+            }
+        });
+        // 兜底：如果单选组一个都没选中，强制选中第一个
+        if (id !== 'toppingChips' && chips.length > 0 && !document.querySelector('#' + id + ' .spec-chip.selected')) {
+            chips[0].classList.add('selected');
+        }
+    }
+
+
 
     // 加购
     function addToCart() {
@@ -1891,9 +1958,22 @@
 
     // 直接购买
     function buyNow() {
-        var cup = getSelected('cupChips'), temp = getSelected('tempChips'), sugar = getSelected('sugarChips'), topping = getSelected('toppingChips');
+        var cup = getSelected('cupChips'),
+            temp = getSelected('tempChips'),
+            sugar = getSelected('sugarChips'),
+            topping = getSelected('toppingChips');
         var remark = document.getElementById('specRemark').value.trim();
-        var url = 'checkout.jsp?cid=' + currentProduct.id + '&cup=' + encodeURIComponent(cup) + '&temp=' + encodeURIComponent(temp) + '&sugar=' + encodeURIComponent(sugar) + '&topping=' + encodeURIComponent(topping) + '&remark=' + encodeURIComponent(remark);
+
+        // 关键：加上 mode=buynow 和 qty=1
+        var url = 'checkout.jsp?mode=buynow'
+            + '&cid=' + currentProduct.id
+            + '&qty=1'
+            + '&cup=' + encodeURIComponent(cup)
+            + '&temp=' + encodeURIComponent(temp)
+            + '&sugar=' + encodeURIComponent(sugar)
+            + '&topping=' + encodeURIComponent(topping)
+            + '&remark=' + encodeURIComponent(remark);
+
         location.href = url;
     }
 
@@ -2297,20 +2377,17 @@
         document.getElementById('drinkListPanel').style.display = '';
     }
 
-    function selectChip(el, group) {
-        var chips = document.querySelectorAll('#opt-' + group + ' .opt-chip');
-        chips.forEach(function (c) {
-            c.classList.remove('selected');
-        });
-        el.classList.add('selected');
-    }
+
 
     // ===== 支付弹窗 =====
     var selectedPayMethod = 'wechat';
 
     function openPayModal() {
-        var size = getSelected('opt-size');
-        var temp = getSelected('opt-temp');
+        var sizeEl = document.querySelector('#opt-size .opt-chip.selected');
+        var tempEl = document.querySelector('#opt-temp .opt-chip.selected');
+        var size = sizeEl ? sizeEl.textContent : '';
+        var temp = tempEl ? tempEl.textContent : '';
+
         document.getElementById('payModalSub').textContent = currentDrink.name + ' · ' + size + ' · ' + temp;
         document.getElementById('payModalAmount').textContent = currentDrink.price;
         selectedPayMethod = 'wechat';
@@ -2329,10 +2406,6 @@
         document.getElementById('alipayMethod').classList.toggle('selected', method === 'alipay');
     }
 
-    function getSelected(groupId) {
-        var sel = document.querySelector('#' + groupId + ' .opt-chip.selected');
-        return sel ? sel.textContent : '';
-    }
 
     // ===== 确认支付 → 生成订单 =====
     function confirmPay() {
@@ -2345,11 +2418,12 @@
 
         // 点单直接购买：前端模拟支付
         var orderId = '2026' + Math.floor(Date.now() / 1000);
-        var size = getSelected('opt-size');
-        var temp = getSelected('opt-temp');
-        var bean = getSelected('opt-bean');
-        var strength = getSelected('opt-strength');
-        var sugar = getSelected('opt-sugar');
+        var size = (document.querySelector('#opt-size .opt-chip.selected') || {}).textContent || '';
+        var temp = (document.querySelector('#opt-temp .opt-chip.selected') || {}).textContent || '';
+        var bean = (document.querySelector('#opt-bean .opt-chip.selected') || {}).textContent || '';
+        var strength = (document.querySelector('#opt-strength .opt-chip.selected') || {}).textContent || '';
+        var sugar = (document.querySelector('#opt-sugar .opt-chip.selected') || {}).textContent || '';
+        var milk = (document.querySelector('#opt-milk .opt-chip.selected') || {}).textContent || '';
         var milk = getSelected('opt-milk');
         var order = {
             id: orderId,
@@ -2479,10 +2553,11 @@
     function updateCart(index, op) {
         location.href = "${pageContext.request.contextPath}/CartUpdateServlet?index=" + index + "&op=" + op + "&page=cart";
     }
+
+
+
 </script>
 </body>
 </html>
 
 
-
-///

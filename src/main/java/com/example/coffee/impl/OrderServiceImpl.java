@@ -15,6 +15,15 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDao orderDao = new OrderDaoImpl();
 
+    public Order getOrderDetail(int orderId) {
+        Order order = orderDao.selectOrderById(orderId);
+        if (order != null) {
+            // 加载订单明细
+            List<OrderItem> items = orderDao.selectOrderItemsByOrderId(orderId);
+            order.setItems(items);
+        }
+        return order;
+    }
     @Override
     public int createOrder(Order order, List<OrderItem> items) {
         Connection conn = null;

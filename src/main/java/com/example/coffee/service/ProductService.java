@@ -17,4 +17,6 @@ public interface ProductService {
     List<Product> getNewProducts();
     // 新增:搜索商品
     List<Product> searchProducts(String keyword);
+
+
 }
