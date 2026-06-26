@@ -12,7 +12,7 @@
         response.sendRedirect("login.jsp");
         return;
     }
-    
+
     int orderId = 0;
     try {
         orderId = Integer.parseInt(request.getParameter("orderId"));
@@ -20,13 +20,13 @@
         response.sendRedirect("myOrder.jsp");
         return;
     }
-    
+
     Order order = new OrderServiceImpl().getOrderById(orderId);
     if (order == null || order.getUserId() != loginUser.getId()) {
         response.sendRedirect("myOrder.jsp");
         return;
     }
-    
+
     List<OrderItem> orderItems = new OrderServiceImpl().getOrderItems(orderId);
     request.setAttribute("order", order);
     request.setAttribute("orderItems", orderItems);
@@ -183,12 +183,19 @@
     </div>
 </div>
 
-<!-- 操作按钮 -->
+<!-- 操作按钮（根据订单状态动态显示） -->
 <div class="section">
     <div class="action-btns">
         <button class="action-btn btn-secondary" onclick="reorder()">🛒 再买一单</button>
-        <c:if test="${order.status == 2}">
-            <button class="action-btn btn-success" onclick="review()">⭐ 去评价</button>
+
+        <!-- 待付款：显示去支付 -->
+        <c:if test="${order.status == 0}">
+            <button class="action-btn btn-primary" onclick="location.href='payment.jsp?orderId=${order.id}'">💳 去支付</button>
+        </c:if>
+
+        <!-- 已付款（待取餐/已完成）：显示评价订单 -->
+        <c:if test="${order.status == 1 || order.status == 2}">
+            <button class="action-btn btn-success" onclick="review()">⭐ 评价订单</button>
         </c:if>
     </div>
 </div>
@@ -196,7 +203,7 @@
 <!-- 底部导航 -->
 <div class="footer-nav">
     <div class="nav-item" onclick="location.href='index.jsp'">首页</div>
-    <div class="nav-item" onclick="location.href='coffeeList.jsp'">点单</div>
+    <div class="nav-item" onclick="location.href='index.jsp'">点单</div>
     <div class="nav-item" onclick="location.href='myOrder.jsp'">订单</div>
     <div class="nav-item active" onclick="location.href='personal.jsp'">我的</div>
 </div>
@@ -204,7 +211,7 @@
 <script>
     // 再买一单 - 跳转到点单页面
     function reorder() {
-        window.location.href = '${pageContext.request.contextPath}/coffeeList.jsp';
+        window.location.href = '${pageContext.request.contextPath}/index.jsp';
     }
 
     // 去评价

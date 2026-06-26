@@ -33,7 +33,11 @@
         .status-1 {color:#4CAF50;}
         .status-2 {color:#947c64;}
         .status-3 {color:#ff6b6b;}
-        .order-remark {font-size:14px;line-height:1.6;color:#5C4836;background:#FFF9EF;border-radius:8px;padding:10px;margin:8px 0;}
+        .order-items {font-size:14px;line-height:1.6;color:#5C4836;background:#FFF9EF;border-radius:8px;padding:10px;margin:8px 0;}
+        .item-line {display:flex;justify-content:space-between;padding:3px 0;}
+        .item-name-qty {flex:1;}
+        .item-price {color:#C9B48E;font-weight:bold;}
+        .order-remark {font-size:13px;color:#947c64;margin-top:6px;padding:4px 8px;background:#FDF6EB;border-radius:6px;}
         .order-bottom {display:flex;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid #E9D9C2;align-items:center;}
         .order-total {font-weight:bold;color:#C9B48E;font-size:16px;}
         .pay-btn {border:none;padding:6px 16px;border-radius:14px;font-size:13px;cursor:pointer;background:#C9B48E;color:#fff;}
@@ -58,7 +62,7 @@
         <div class="empty-tip">
             <p style="font-size:40px;">📋</p>
             <p style="margin-top:10px;">暂无订单记录</p>
-            <p style="margin-top:10px;"><a href="coffeeList.jsp">去点单 ></a></p>
+            <p style="margin-top:10px;"><a href="index.jsp">去点单 ></a></p>
         </div>
     </c:when>
     <c:otherwise>
@@ -69,7 +73,19 @@
                         <span class="order-no">订单号：${order.orderNo}</span>
                         <span class="order-status status-${order.status}">${order.statusText}</span>
                     </div>
-                    <div class="order-remark">${order.remark}</div>
+
+                    <div class="order-items">
+                        <c:forEach items="${order.items}" var="item">
+                            <div class="item-line">
+                                <span class="item-name-qty">${item.productName} ×${item.quantity}</span>
+                                <span class="item-price">¥<fmt:formatNumber value="${item.price * item.quantity}" pattern="#"/></span>
+                            </div>
+                        </c:forEach>
+                        <c:if test="${not empty order.remark}">
+                            <div class="order-remark">📌 ${order.remark}</div>
+                        </c:if>
+                    </div>
+
                     <div class="order-time">
                         下单时间：<fmt:formatDate value="${order.createTime}" pattern="yyyy-MM-dd HH:mm"/>
                         <c:if test="${not empty order.payTime}">　|　支付时间：<fmt:formatDate value="${order.payTime}" pattern="yyyy-MM-dd HH:mm"/></c:if>
@@ -82,7 +98,7 @@
                             </c:if>
                             <button class="detail-btn" onclick="location.href='orderDetail.jsp?orderId=${order.id}'">查看详情</button>
                             <c:if test="${order.status == 2}">
-                                <button class="pay-btn" onclick="location.href='coffeeList.jsp'" style="background:#4CAF50;margin-left:5px;">再买一单</button>
+                                <button class="pay-btn" onclick="location.href='index.jsp'" style="background:#4CAF50;margin-left:5px;">再买一单</button>
                                 <button class="detail-btn" onclick="alert('评价功能开发中')" style="margin-left:5px;">去评价</button>
                             </c:if>
                         </div>

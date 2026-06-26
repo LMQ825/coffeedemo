@@ -67,7 +67,7 @@
 <!-- 底部导航 -->
 <div class="footer-nav">
   <div class="nav-item" onclick="location.href='index.jsp'">首页</div>
-  <div class="nav-item" onclick="location.href='coffeeList.jsp'">点单</div>
+  <div class="nav-item" onclick="location.href='index.jsp'">点单</div>
   <div class="nav-item active" onclick="location.href='personal.jsp'">我的</div>
 </div>
 </body>

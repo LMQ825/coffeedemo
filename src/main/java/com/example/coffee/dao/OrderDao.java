@@ -2,46 +2,56 @@ package com.example.coffee.dao;
 
 import com.example.coffee.entity.Order;
 import com.example.coffee.entity.OrderItem;
-
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public interface OrderDao {
-    // 分页查询订单（关联用户名）
-    List<Order> selectOrderList(Integer status, int start, int pageSize);
-    // 查询总数
-    int selectOrderCount(Integer status);
-    // 根据ID查询订单（含明细）
-    Order selectOrderById(int id);
-    // 更新订单状态
-    int updateOrderStatus(int orderId, int status);
-    // 根据订单ID查询明细（关联商品名称）
-    List<OrderItem> selectOrderItemsByOrderId(int orderId);
-    // 新增订单主表，返回自增主键 id
+    // ---- 订单主表操作 ----
     int insertOrder(Order order);
-    // 新增订单明细
-    int insertOrderItem(OrderItem item);
-    // 根据用户ID查询其订单（按时间倒序）
+    Order selectOrderById(int id);
     List<Order> selectOrdersByUserId(int userId);
-    // 订单支付：状态置为待取餐(1)并记录支付时间
+    List<Order> selectOrderList(Integer status, int start, int pageSize);
+    int selectOrderCount(Integer status);
+    int updateOrderStatus(int orderId, int status);
     int payOrder(int orderId);
-    
-    // ========== 统计相关方法 ==========
-    // 查询今日销售额
+
+    // ---- 订单明细操作 ----
+    int insertOrderItem(OrderItem item);
+    List<OrderItem> selectOrderItemsByOrderId(int orderId);
+
+    // ===== 新增：仪表盘统计方法 =====
+    /**
+     * 查询今日销售额（已支付订单）
+     */
     Double selectTodaySales();
-    // 查询今日订单数
+
+    /**
+     * 查询今日订单数
+     */
     int selectTodayOrderCount();
-    // 查询某时间段内的销售额
-    Double selectSalesByDateRange(Date startDate, Date endDate);
-    // 查询待处理订单数
+
+    /**
+     * 查询待处理订单数（待付款 + 待取餐）
+     */
     int selectPendingOrderCount();
-    // 查询销量排行榜（返回商品名称和销量）
+    // ===== 统计分析方法 =====
+    /**
+     * 查询销量前 N 的商品（按销量降序）
+     */
     List<Map<String, Object>> selectTopSellingProducts(int limit);
-    // 查询订单状态分布（返回状态和数量）
+
+    /**
+     * 查询订单状态分布（各状态数量）
+     */
     List<Map<String, Object>> selectOrderStatusDistribution();
-    // 查询最近7天每日销售额
+
+    /**
+     * 查询最近7天每日销售额（按日期分组）
+     */
     List<Map<String, Object>> selectDailySalesLast7Days();
-    // 查询分类销售占比
+
+    /**
+     * 查询分类销售占比（按分类汇总销售额）
+     */
     List<Map<String, Object>> selectCategorySalesDistribution();
 }

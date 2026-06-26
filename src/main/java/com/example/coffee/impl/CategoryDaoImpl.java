@@ -96,6 +96,7 @@ public class CategoryDaoImpl implements CategoryDao {
         return c;
     }
 
+
     @Override
     public int insertCategory(Category category) {
         int result = 0;

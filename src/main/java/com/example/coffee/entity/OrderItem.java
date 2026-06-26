@@ -1,32 +1,32 @@
 package com.example.coffee.entity;
 
 public class OrderItem {
-    private Integer id;
-    private Integer orderId;
-    private Integer productId;
-    private Integer quantity;
-    private Double price;   // 快照价格
+    private int id;
+    private int orderId;
+    private int productId;
+    private int quantity;
+    private double price;
 
-    // 关联字段（页面展示）
+    // 冗余字段：商品名称（由DAO查询时填充）
     private String productName;
 
     public OrderItem() {}
 
-    // ---- getter / setter ----
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-    public Integer getOrderId() { return orderId; }
-    public void setOrderId(Integer orderId) { this.orderId = orderId; }
-    public Integer getProductId() { return productId; }
-    public void setProductId(Integer productId) { this.productId = productId; }
-    public Integer getQuantity() { return quantity; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
-    public Double getPrice() { return price; }
-    public void setPrice(Double price) { this.price = price; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public int getOrderId() { return orderId; }
+    public void setOrderId(int orderId) { this.orderId = orderId; }
+
+    public int getProductId() { return productId; }
+    public void setProductId(int productId) { this.productId = productId; }
+
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
+
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }
-
-    public Double getSubtotal() {
-        return price * quantity;
-    }
 }

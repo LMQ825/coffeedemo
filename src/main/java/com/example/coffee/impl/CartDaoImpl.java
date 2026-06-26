@@ -10,15 +10,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 购物车DAO实现 - 支持购物车数据持久化到数据库
- */
 public class CartDaoImpl implements CartDao {
-    
+
     @Override
-    public int saveCartItem(int userId, int productId, int quantity) {
+    public int saveCartItem(int userId, int productId, int quantity, String spec, String remark) {
         int rows = 0;
-        String sql = "INSERT INTO cart(user_id, product_id, quantity) VALUES(?,?,?)";
+        String sql = "INSERT INTO cart (user_id, product_id, quantity, spec, remark) VALUES (?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity), spec = VALUES(spec), remark = VALUES(remark)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
@@ -27,6 +25,8 @@ public class CartDaoImpl implements CartDao {
             pstmt.setInt(1, userId);
             pstmt.setInt(2, productId);
             pstmt.setInt(3, quantity);
+            pstmt.setString(4, spec == null ? "" : spec);
+            pstmt.setString(5, remark == null ? "" : remark);
             rows = pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -35,7 +35,7 @@ public class CartDaoImpl implements CartDao {
         }
         return rows;
     }
-    
+
     @Override
     public int updateCartItemQuantity(int userId, int productId, int quantity) {
         int rows = 0;
@@ -56,7 +56,7 @@ public class CartDaoImpl implements CartDao {
         }
         return rows;
     }
-    
+
     @Override
     public int deleteCartItem(int userId, int productId) {
         int rows = 0;
@@ -76,7 +76,7 @@ public class CartDaoImpl implements CartDao {
         }
         return rows;
     }
-    
+
     @Override
     public int clearUserCart(int userId) {
         int rows = 0;
@@ -95,13 +95,13 @@ public class CartDaoImpl implements CartDao {
         }
         return rows;
     }
-    
+
     @Override
     public List<CartItem> selectUserCart(int userId) {
         List<CartItem> list = new ArrayList<>();
-        String sql = "SELECT c.product_id, p.name, p.price, p.icon, c.quantity " +
-                    "FROM cart c LEFT JOIN product p ON c.product_id = p.id " +
-                    "WHERE c.user_id=? ORDER BY c.id DESC";
+        String sql = "SELECT c.product_id, c.quantity, c.spec, c.remark, p.name, p.price " +
+                "FROM cart c LEFT JOIN product p ON c.product_id = p.id " +
+                "WHERE c.user_id=? ORDER BY c.id DESC";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -113,10 +113,12 @@ public class CartDaoImpl implements CartDao {
             while (rs.next()) {
                 CartItem item = new CartItem();
                 item.setProductId(rs.getInt("product_id"));
+                item.setQuantity(rs.getInt("quantity"));
+                item.setSpec(rs.getString("spec"));
+                item.setRemark(rs.getString("remark"));
                 item.setName(rs.getString("name"));
                 item.setPrice(rs.getDouble("price"));
-                item.setIcon(rs.getString("icon"));
-                item.setQuantity(rs.getInt("quantity"));
+                item.setIcon("☕"); // 默认图标，可以从 product 表查询
                 list.add(item);
             }
         } catch (Exception e) {

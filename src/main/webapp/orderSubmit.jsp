@@ -49,7 +49,7 @@
         <div class="empty-tip">
             <p style="font-size:40px;">🛒</p>
             <p style="margin-top:10px;">购物车为空，无法提交订单</p>
-            <p style="margin-top:10px;"><a href="coffeeList.jsp">去点单 ></a></p>
+            <p style="margin-top:10px;"><a href="index.jsp">去点单 ></a></p>
         </div>
     </c:when>
     <c:otherwise>

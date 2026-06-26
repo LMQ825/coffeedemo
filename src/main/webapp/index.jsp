@@ -1213,6 +1213,33 @@
             margin-left: 6px;
             vertical-align: middle;
         }
+        /* 规格选择模态框（小卡片） */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.show { display: flex; }
+        .modal-box { background: #fff; border-radius: 20px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; padding: 24px 20px 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal-close { float: right; width: 30px; height: 30px; border-radius: 50%; border: none; background: #F0E6D6; font-size: 18px; cursor: pointer; color: #5C4836; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: #E0D0BA; }
+        .modal-product { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .modal-icon { width: 48px; height: 48px; background: #F7E9D6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 28px; overflow: hidden; flex-shrink: 0; }
+        .modal-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .modal-name { font-weight: bold; font-size: 17px; color: #5C4836; }
+        .modal-price { color: #C9B48E; font-weight: bold; font-size: 15px; margin-top: 2px; }
+        .spec-section { margin-bottom: 14px; }
+        .spec-label { font-size: 13px; font-weight: bold; color: #5C4836; margin-bottom: 6px; }
+        .spec-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+        .spec-chip { padding: 5px 14px; border-radius: 20px; border: 1.5px solid #D9C3A8; background: #fff; color: #5C4836; font-size: 13px; cursor: pointer; transition: 0.15s; }
+        .spec-chip.selected { background: #5C4836; color: #fff; border-color: #5C4836; }
+        .spec-chip:hover:not(.selected) { background: #F3E2CD; }
+        .spec-remark { width: 100%; padding: 8px 12px; border: 1px solid #E0CDB4; border-radius: 10px; outline: none; background: #FFF9EF; font-size: 13px; resize: none; height: 40px; }
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid #E9D9C2; }
+        .modal-total { font-size: 20px; font-weight: bold; color: #C9B48E; }
+        .modal-btn-group { display: flex; gap: 8px; }
+        .modal-cart-btn { padding: 8px 18px; background: #C9B48E; color: #fff; border: none; border-radius: 20px; cursor: pointer; font-size: 13px; }
+        .modal-cart-btn:hover { background: #b8a07a; }
+        .modal-buy-btn { padding: 8px 18px; background: #5C4836; color: #fff; border: none; border-radius: 20px; cursor: pointer; font-size: 13px; }
+        .modal-buy-btn:hover { background: #4a3728; }
+        #toastMsg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.75); color: #fff; padding: 14px 28px; border-radius: 10px; font-size: 15px; z-index: 10000; }
     </style>
 </head>
 <body>
@@ -1355,8 +1382,8 @@
                                         </div>
                                         <div class="coffee-price">¥${p.price}</div>
                                         <div class="btn-row">
-                                            <button class="buy-now" onclick="openCustomize('${p.name}','¥${p.price}','${not empty p.imageUrl ? p.imageUrl : ''}')">直接购买</button>
-                                            <button class="add-cart" onclick="addToCart(${p.id})">加购</button>
+                                            <button class="buy-now-btn" onclick="openModal(${p.id},'${p.name}',${p.price},'${not empty p.imageUrl ? p.imageUrl : ''}')">直接购买</button>
+                                            <button class="add-cart-btn" onclick="openModal(${p.id},'${p.name}',${p.price},'${not empty p.imageUrl ? p.imageUrl : ''}')">加购</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1507,27 +1534,27 @@
                                     <div class="order-top">
                                         <span>订单号：${order.orderNo}</span>
                                         <span class="order-status" style="color:
-                                            <c:choose>
-                                                <c:when test="${order.status eq 0}">#ff9800</c:when>
-                                                <c:when test="${order.status eq 1}">#C9B48E</c:when>
-                                                <c:when test="${order.status eq 2}">#4caf50</c:when>
-                                                <c:when test="${order.status eq 3}">#999</c:when>
-                                                <c:otherwise>#C9B48E</c:otherwise>
-                                            </c:choose>
-                                        ">${order.statusText}</span>
+                                        <c:choose>
+                                        <c:when test="${order.status eq 0}">#ff9800</c:when>
+                                        <c:when test="${order.status eq 1}">#C9B48E</c:when>
+                                        <c:when test="${order.status eq 2}">#4caf50</c:when>
+                                        <c:when test="${order.status eq 3}">#999</c:when>
+                                        <c:otherwise>#C9B48E</c:otherwise>
+                                        </c:choose>
+                                                ">${order.statusText}</span>
                                     </div>
                                     <c:forEach items="${order.items}" var="item">
                                         <div class="order-item">
                                             <div class="order-icon">${item.productName eq null || empty item.productName ? '☕' :
-                                                fn:contains(item.productName, '拿铁') ? '☕' :
-                                                fn:contains(item.productName, '美式') ? '☕' :
-                                                fn:contains(item.productName, '气泡') ? '🫧' :
-                                                fn:contains(item.productName, '提拉米苏') ? '🍰' :
-                                                fn:contains(item.productName, '蛋糕') ? '🍰' :
-                                                fn:contains(item.productName, '甜品') ? '🧁' :
-                                                fn:contains(item.productName, '冷萃') ? '🧊' :
-                                                fn:contains(item.productName, '特调') ? '🍹' :
-                                                '☕'}</div>
+                                                    fn:contains(item.productName, '拿铁') ? '☕' :
+                                                            fn:contains(item.productName, '美式') ? '☕' :
+                                                                    fn:contains(item.productName, '气泡') ? '🫧' :
+                                                                            fn:contains(item.productName, '提拉米苏') ? '🍰' :
+                                                                                    fn:contains(item.productName, '蛋糕') ? '🍰' :
+                                                                                            fn:contains(item.productName, '甜品') ? '🧁' :
+                                                                                                    fn:contains(item.productName, '冷萃') ? '🧊' :
+                                                                                                            fn:contains(item.productName, '特调') ? '🍹' :
+                                                                                                                    '☕'}</div>
                                             <span>${item.productName} ×${item.quantity}</span>
                                         </div>
                                     </c:forEach>
@@ -1656,6 +1683,64 @@
         </div>
     </div>
 </div>
+<!-- 规格选择模态框 -->
+<div class="modal-overlay" id="specModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-product">
+            <div class="modal-icon" id="modalIcon">☕</div>
+            <div>
+                <div class="modal-name" id="modalName">商品名</div>
+                <div class="modal-price" id="modalPriceDisp">¥0</div>
+            </div>
+        </div>
+        <div class="spec-section">
+            <div class="spec-label">杯型</div>
+            <div class="spec-chips" id="cupChips">
+                <div class="spec-chip selected" onclick="selectChip(this,'cup')">中杯</div>
+                <div class="spec-chip" onclick="selectChip(this,'cup')">大杯 (+¥3)</div>
+            </div>
+        </div>
+        <div class="spec-section">
+            <div class="spec-label">冷热</div>
+            <div class="spec-chips" id="tempChips">
+                <div class="spec-chip" onclick="selectChip(this,'temp')">热</div>
+                <div class="spec-chip" onclick="selectChip(this,'temp')">常温</div>
+                <div class="spec-chip selected" onclick="selectChip(this,'temp')">冰</div>
+            </div>
+        </div>
+        <div class="spec-section">
+            <div class="spec-label">甜度</div>
+            <div class="spec-chips" id="sugarChips">
+                <div class="spec-chip selected" onclick="selectChip(this,'sugar')">全糖</div>
+                <div class="spec-chip" onclick="selectChip(this,'sugar')">七分糖</div>
+                <div class="spec-chip" onclick="selectChip(this,'sugar')">半糖</div>
+                <div class="spec-chip" onclick="selectChip(this,'sugar')">无糖</div>
+            </div>
+        </div>
+        <div class="spec-section">
+            <div class="spec-label">加料</div>
+            <div class="spec-chips" id="toppingChips">
+                <div class="spec-chip selected" onclick="selectChip(this,'topping')">无</div>
+                <div class="spec-chip" onclick="selectChip(this,'topping')">珍珠 (+¥3)</div>
+                <div class="spec-chip" onclick="selectChip(this,'topping')">椰果 (+¥3)</div>
+                <div class="spec-chip" onclick="selectChip(this,'topping')">奶盖 (+¥5)</div>
+            </div>
+        </div>
+        <div class="spec-section">
+            <div class="spec-label">备注</div>
+            <textarea class="spec-remark" id="specRemark" placeholder="少冰/不要吸管等"></textarea>
+        </div>
+        <div class="modal-footer">
+            <div class="modal-total" id="modalTotal">¥0</div>
+            <div class="modal-btn-group">
+                <button class="modal-cart-btn" onclick="addToCart()">加入购物车</button>
+                <button class="modal-buy-btn" onclick="buyNow()">直接购买</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="toastMsg" style="display:none;"></div>
 
 <script>
     // ===== 地址选择功能 =====
@@ -1700,6 +1785,122 @@
         });
     }
 
+    // 当前选中的商品
+    var currentProduct = { id: 0, name: '', price: 0, imageUrl: '' };
+
+    function getContextPath() {
+        var path = window.location.pathname;
+        var idx = path.indexOf('/', 1);
+        return idx > 0 ? path.substring(0, idx) : '';
+    }
+
+    function showToast(msg) {
+        var t = document.getElementById('toastMsg');
+        t.style.display = 'block';
+        t.textContent = msg;
+        setTimeout(function() { t.style.display = 'none'; }, 1500);
+    }
+
+    // 打开模态框
+    function openModal(id, name, price, imageUrl) {
+        currentProduct = { id: id, name: name, price: price, imageUrl: imageUrl || '' };
+        var icon = document.getElementById('modalIcon');
+        if (imageUrl && imageUrl !== '') {
+            icon.innerHTML = '<img src="' + getContextPath() + '/' + imageUrl + '" alt="' + name + '">';
+        } else { icon.textContent = '☕'; }
+        document.getElementById('modalName').textContent = name;
+        document.getElementById('modalPriceDisp').textContent = '¥' + price;
+        document.getElementById('specRemark').value = '';
+        resetChips('cupChips');
+        resetChips('tempChips');
+        resetChips('sugarChips');
+        resetChips('toppingChips');
+        var tc = document.querySelectorAll('#tempChips .spec-chip');
+        tc.forEach(function(c) { c.classList.remove('selected'); });
+        tc[2].classList.add('selected');
+        updatePrice();
+        document.getElementById('specModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('specModal').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    function resetChips(id) {
+        var chips = document.querySelectorAll('#' + id + ' .spec-chip');
+        chips.forEach(function(c, i) { c.classList.toggle('selected', i === 0); });
+    }
+
+    function selectChip(el, group) {
+        var parent = el.parentElement;
+        var chips = parent.querySelectorAll('.spec-chip');
+        chips.forEach(function(c) { c.classList.remove('selected'); });
+        el.classList.add('selected');
+        updatePrice();
+    }
+
+    function getSelected(id) {
+        var sel = document.querySelector('#' + id + ' .spec-chip.selected');
+        return sel ? sel.textContent.replace(/\s*\(.*\)/, '').trim() : '';
+    }
+
+    function updatePrice() {
+        var cup = getSelected('cupChips');
+        var topping = getSelected('toppingChips');
+        var cupUp = (cup === '大杯') ? 3 : 0;
+        var topUp = (topping === '珍珠') ? 3 : (topping === '椰果' ? 3 : (topping === '奶盖' ? 5 : 0));
+        var total = currentProduct.price + cupUp + topUp;
+        document.getElementById('modalTotal').textContent = '¥' + total;
+        document.getElementById('modalPriceDisp').textContent = '¥' + total;
+    }
+
+    function buildSpec() {
+        var cup = getSelected('cupChips'), temp = getSelected('tempChips'), sugar = getSelected('sugarChips'), topping = getSelected('toppingChips');
+        var remark = document.getElementById('specRemark').value.trim();
+        var spec = cup + '/' + temp + '/' + sugar + '/' + topping;
+        if (remark) spec += ' 备注:' + remark;
+        return spec;
+    }
+
+    // 加购
+    function addToCart() {
+        var spec = buildSpec();
+        var remark = document.getElementById('specRemark').value.trim();
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', getContextPath() + '/CartAddServlet', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    var r = JSON.parse(xhr.responseText);
+                    if (r.success) {
+                        var badge = document.getElementById('cartBadge');
+                        if (badge && r.cartSize) badge.textContent = r.cartSize;
+                        showToast('✅ 加入购物车成功');
+                        closeModal();
+                    } else { showToast('❌ 加购失败'); }
+                } catch(e) { showToast('✅ 加入购物车成功'); closeModal(); }
+            } else { showToast('❌ 加购失败'); }
+        };
+        xhr.onerror = function() { showToast('❌ 网络错误'); };
+        xhr.send('coffeeId=' + currentProduct.id + '&spec=' + encodeURIComponent(spec) + '&remark=' + encodeURIComponent(remark));
+    }
+
+    // 直接购买
+    function buyNow() {
+        var cup = getSelected('cupChips'), temp = getSelected('tempChips'), sugar = getSelected('sugarChips'), topping = getSelected('toppingChips');
+        var remark = document.getElementById('specRemark').value.trim();
+        var url = 'checkout.jsp?cid=' + currentProduct.id + '&cup=' + encodeURIComponent(cup) + '&temp=' + encodeURIComponent(temp) + '&sugar=' + encodeURIComponent(sugar) + '&topping=' + encodeURIComponent(topping) + '&remark=' + encodeURIComponent(remark);
+        location.href = url;
+    }
+
+    // 点击遮罩关闭
+    document.addEventListener('click', function(e) {
+        if (e.target === document.getElementById('specModal')) closeModal();
+    });
     function selectAddress(addressId) {
         selectedAddressId = addressId;
         localStorage.setItem('selectedAddressId', addressId);
@@ -1719,17 +1920,17 @@
     // ===== 搜索功能 =====
     function searchProducts() {
         var keyword = document.getElementById('productSearchInput').value.trim();
-        
+
         // 检查是否为空
         if (keyword === '') {
             alert('请输入搜索关键词');
             return;
         }
-        
+
         // 跳转到点单页面并传递搜索关键词
         window.location.href = 'index.jsp?type=search&keyword=' + encodeURIComponent(keyword);
     }
-    
+
     // 监听Enter键
     document.addEventListener('DOMContentLoaded', function() {
         var searchInput = document.getElementById('productSearchInput');
@@ -1741,7 +1942,7 @@
             });
         }
     });
-    
+
     function showAllProducts() {
         var productCards = document.querySelectorAll('.coffee-card');
         productCards.forEach(function(card) {
@@ -1749,7 +1950,7 @@
         });
         hideNoResultMessage();
     }
-    
+
     function showNoResultMessage(keyword) {
         // 检查是否已经存在提示消息
         var existingMsg = document.getElementById('noResultMessage');
@@ -1758,7 +1959,7 @@
             msgDiv.id = 'noResultMessage';
             msgDiv.className = 'empty-tip';
             msgDiv.innerHTML = '<span class="big-icon">🔍</span>没有找到与 "' + keyword + '" 相关的饮品<br><span style="font-size:13px;">请尝试其他关键词</span>';
-            
+
             var drinkList = document.getElementById('drinkListPanel');
             if (drinkList) {
                 var wrap = drinkList.querySelector('.coffee-wrap');
@@ -1768,14 +1969,14 @@
             }
         }
     }
-    
+
     function hideNoResultMessage() {
         var msg = document.getElementById('noResultMessage');
         if (msg) {
             msg.remove();
         }
     }
-    
+
     // 点单折叠
     const menuBtn = document.getElementById('orderMenuBtn');
     const subMenu = document.getElementById('orderSubMenu');
@@ -1872,7 +2073,7 @@
         document.getElementById('orderDetailTitle').textContent = '订单号：' + (data.orderNo || '-');
         var statusEl = document.getElementById('orderDetailStatus');
         statusEl.textContent = data.statusText || '未知状态';
-        
+
         // 根据状态设置颜色
         var statusColors = {
             '待付款': { bg: '#fff3e0', color: '#ff9800' },
@@ -1898,7 +2099,7 @@
         html += '<div class="timeline-title">订单已提交</div>';
         html += '<div class="timeline-time">' + (data.createTime || '-') + '</div>';
         html += '</div></div>';
-        
+
         if (data.payTime) {
             html += '<div class="timeline-item">';
             html += '<div class="timeline-dot active"></div>';
@@ -1907,7 +2108,7 @@
             html += '<div class="timeline-time">' + data.payTime + '</div>';
             html += '</div></div>';
         }
-        
+
         if (data.status >= 1) {
             html += '<div class="timeline-item">';
             html += '<div class="timeline-dot active"></div>';
@@ -1931,7 +2132,7 @@
         if (data.items && data.items.length > 0) {
             html += '<div class="detail-section">';
             html += '<div class="detail-section-title">🛍️ 商品明细</div>';
-            
+
             data.items.forEach(function(item) {
                 // 判断图标
                 var icon = '☕';
@@ -1949,12 +2150,12 @@
                 html += '<div class="detail-item-icon">' + icon + '</div>';
                 html += '<div class="detail-item-info">';
                 html += '<div class="detail-item-name">' + (item.productName || '商品') + '</div>';
-                
+
                 // 规格信息
                 if (item.specification || item.remark) {
                     html += '<div class="detail-item-spec">' + (item.specification || item.remark || '') + '</div>';
                 }
-                
+
                 html += '<div class="detail-item-price-row">';
                 html += '<span>×' + (item.quantity || 1) + '</span>';
                 html += '<span class="detail-item-price">¥' + (item.price || 0) + '</span>';
@@ -1969,19 +2170,19 @@
         html += '<div class="detail-section-title">💰 费用明细</div>';
         html += '<div class="detail-price-summary">';
         html += '<div class="detail-total-row"><span class="detail-label">商品原价</span><span class="detail-value">¥' + (data.originalPrice || data.totalPrice || 0) + '</span></div>';
-        
+
         if (data.discountPrice && data.discountPrice > 0) {
             html += '<div class="detail-total-row"><span class="detail-label">优惠减免</span><span class="detail-value" style="color:#4caf50;">-¥' + data.discountPrice + '</span></div>';
         }
-        
+
         if (data.deliveryFee && data.deliveryFee > 0) {
             html += '<div class="detail-total-row"><span class="detail-label">配送费</span><span class="detail-value">¥' + data.deliveryFee + '</span></div>';
         }
-        
+
         if (data.packFee && data.packFee > 0) {
             html += '<div class="detail-total-row"><span class="detail-label">打包费</span><span class="detail-value">¥' + data.packFee + '</span></div>';
         }
-        
+
         html += '<div class="detail-total-row detail-total-final">';
         html += '<span style="font-weight:bold;">实付金额</span>';
         html += '<span class="detail-value">¥' + (data.totalPrice || 0) + '</span>';
@@ -2218,7 +2419,7 @@
     }
 
     // 加入购物车
-    function addToCart(productId) {
+    function addToCartDirect(productId) {
         window.location.href = '${pageContext.request.contextPath}/CartAddServlet?coffeeId=' + productId + '&from=index';
     }
 

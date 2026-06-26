@@ -51,7 +51,7 @@
         <div class="empty-cart">
             <p style="font-size:50px;">🛒</p>
             <p style="margin-top:15px;">购物车还是空的，去点单看看吧～</p>
-            <p style="margin-top:15px;"><a href="coffeeList.jsp">去点单 ></a></p>
+            <p style="margin-top:15px;"><a href="index.jsp">去点单 ></a></p>
         </div>
     </c:when>
     <c:otherwise>
@@ -73,14 +73,14 @@
 
         <div class="settle-bar">
             <div class="total-text">合计：<span class="total-price">¥<fmt:formatNumber value="${cartTotal}" pattern="#"/></span></div>
-            <button class="submit-btn" onclick="goPay()">结算</button>
+            <button class="submit-btn" onclick="goConfirm()">结算</button>
         </div>
     </c:otherwise>
 </c:choose>
 
 <div class="footer-nav">
     <div class="nav-item" onclick="location.href='index.jsp'">首页</div>
-    <div class="nav-item" onclick="location.href='coffeeList.jsp'">点单</div>
+    <div class="nav-item" onclick="location.href='index.jsp'">点单</div>
     <div class="nav-item active" onclick="location.href='cart.jsp'">购物车</div>
     <div class="nav-item" onclick="location.href='myOrder.jsp'">订单</div>
     <div class="nav-item" onclick="location.href='personal.jsp'">我的</div>
@@ -88,14 +88,14 @@
 
 <script>
     let loginUser = ${sessionScope.loginUser != null ? 1 : 0};
-    function goPay(){
+    function goConfirm(){
         if(loginUser !== 1){
             alert("下单前需要登录账号！");
             location.href = "login.jsp";
             return;
         }
-        // 提交订单到服务器
-        location.href = "${pageContext.request.contextPath}/OrderSubmitServlet?mode=cart";
+        // 跳转到地址确认页面
+        location.href = "confirmAddress.jsp";
     }
 </script>
 </body>

@@ -51,7 +51,7 @@
         <div class="empty-cart">
             <p style="font-size:50px;">🛒</p>
             <p style="margin-top:15px;">购物车还是空的，去点单看看吧～</p>
-            <p style="margin-top:15px;"><a href="coffeeList.jsp">去点单 ></a></p>
+            <p style="margin-top:15px;"><a href="index.jsp">去点单 ></a></p>
         </div>
     </c:when>
     <c:otherwise>
@@ -80,7 +80,7 @@
 
 <div class="footer-nav">
     <div class="nav-item" onclick="location.href='index.jsp'">首页</div>
-    <div class="nav-item" onclick="location.href='coffeeList.jsp'">点单</div>
+    <div class="nav-item" onclick="location.href='index.jsp'">点单</div>
     <div class="nav-item active" onclick="location.href='cart.jsp'">购物车</div>
     <div class="nav-item" onclick="location.href='myOrder.jsp'">订单</div>
     <div class="nav-item" onclick="location.href='personal.jsp'">我的</div>
