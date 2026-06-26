@@ -73,7 +73,7 @@
 
         <div class="settle-bar">
             <div class="total-text">合计：<span class="total-price">¥<fmt:formatNumber value="${cartTotal}" pattern="#"/></span></div>
-            <button class="submit-btn" onclick="goPay()">结算</button>
+            <button class="submit-btn" onclick="goConfirm()">结算</button>
         </div>
     </c:otherwise>
 </c:choose>
@@ -88,14 +88,14 @@
 
 <script>
     let loginUser = ${sessionScope.loginUser != null ? 1 : 0};
-    function goPay(){
+    function goConfirm(){
         if(loginUser !== 1){
             alert("下单前需要登录账号！");
             location.href = "login.jsp";
             return;
         }
-        // 提交订单到服务器
-        location.href = "${pageContext.request.contextPath}/OrderSubmitServlet?mode=cart";
+        // 跳转到地址确认页面
+        location.href = "confirmAddress.jsp";
     }
 </script>
 </body>

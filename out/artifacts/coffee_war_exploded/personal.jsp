@@ -1,4 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.example.coffee.entity.User" %>
+<%
+    User loginUser = (User) session.getAttribute("loginUser");
+    if (loginUser == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+    request.setAttribute("loginUser", loginUser);
+%>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -27,7 +37,7 @@
 <!-- 用户头部 -->
 <div class="user-header">
   <div class="user-avatar">🐻</div>
-  <div class="user-name">小熊顾客</div>
+  <div class="user-name">${loginUser.username}</div>
 </div>
 
 <!-- 双栏功能菜单 -->
@@ -48,7 +58,7 @@
     <span class="func-icon">❓</span>
     <span class="func-text">帮助中心</span>
   </div>
-  <div class="func-item" onclick="location.href='login.jsp'">
+  <div class="func-item" onclick="location.href='UserLogoutServlet'">
     <span class="func-icon">🚪</span>
     <span class="func-text">退出登录</span>
   </div>

@@ -80,14 +80,10 @@
                             <c:if test="${order.status == 0}">
                                 <button class="pay-btn" onclick="location.href='payment.jsp?orderId=${order.id}'">去支付</button>
                             </c:if>
-                            <c:if test="${order.status == 1}">
-                                <button class="detail-btn" onclick="alert('请到门店取餐')">待取餐</button>
-                            </c:if>
+                            <button class="detail-btn" onclick="location.href='orderDetail.jsp?orderId=${order.id}'">查看详情</button>
                             <c:if test="${order.status == 2}">
-                                <button class="detail-btn">已完成</button>
-                            </c:if>
-                            <c:if test="${order.status == 3}">
-                                <button class="detail-btn">已取消</button>
+                                <button class="pay-btn" onclick="location.href='coffeeList.jsp'" style="background:#4CAF50;margin-left:5px;">再买一单</button>
+                                <button class="detail-btn" onclick="alert('评价功能开发中')" style="margin-left:5px;">去评价</button>
                             </c:if>
                         </div>
                     </div>
